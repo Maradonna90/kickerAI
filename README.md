@@ -1,4 +1,4 @@
-#Results (2019)
+# Results (2019)
 * LGBM
 	* test_avg_score = 1004.46
 * BRDG (stock)

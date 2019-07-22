@@ -9,7 +9,7 @@ from datetime import date, datetime
 
 class Parser:
     def __init__(self):
-        self.seasons = [19]
+        self.seasons = range(5, 10)
         self.url = 'http://www.kicker.de/news/fussball/bundesliga/vereine/1-bundesliga/20XX-YY/vereine-liste.html'
         self.base = 'http://www.kicker.de'
         self.punkte = {"Note": {
@@ -46,7 +46,7 @@ class Parser:
                 for data in season_data:
                     writer.writerow(data)
     def parse_season(self, season, interactive):
-            r = requests.get(self.url.replace("XX", str(season)).replace("YY", str(season+1)))
+            r = requests.get(self.url.replace("XX", str(season).zfill(2)).replace("YY", str(season+1).zfill(2)))
             soup = BeautifulSoup(r.text)
             rows = soup.find("table", {"class":"kick__table kick__table--ranking kick__table--alternate kick__table--resptabelle"}).find_all("tr")
             data = []
