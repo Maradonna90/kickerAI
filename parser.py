@@ -3,7 +3,6 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import player
-import redis
 from selenium import webdriver
 import csv
 from datetime import date, datetime
@@ -29,7 +28,7 @@ class Parser:
                     "Rot": -6,
                     "Gelb-Rot": -3,
                     "Tor": {
-                        "Torwart": 6,
+                        "Tor": 6,
                         "Abwehr" : 5,
                         "Mittelfeld": 4,
                         "Sturm": 3},
@@ -49,29 +48,29 @@ class Parser:
     def parse_season(self, season, interactive):
             r = requests.get(self.url.replace("XX", str(season)).replace("YY", str(season+1)))
             soup = BeautifulSoup(r.text)
-            rows = soup.find("table", {"class":"tStat"}).find_all("tr")
+            rows = soup.find("table", {"class":"kick__table kick__table--ranking kick__table--alternate kick__table--resptabelle"}).find_all("tr")
             data = []
-            for row in rows[1:]:
-                if "tr_sep" not in row.get("class"):
-                    club_name = row.find("a", {"class": "link verinsLinkBild"}).get_text()
-                    club_squad_link = row.find_all("td")[2].find("a").get("href")
-                    print("Parsing Squad", club_name, club_squad_link)
-                    yield from self.parse_squad(club_squad_link, season, club_name, interactive)
+            for row in rows:
+                club_name = row.find_all("td")[1].find("a").get_text()
+                club_squad_link = row.find_all("td")[3].find("a").get("href")
+                print("Parsing Squad", club_name, club_squad_link)
+                yield from self.parse_squad(club_squad_link, season, club_name, interactive)
     def parse_squad(self, url, season, club, interactive):
         r = requests.get(self.base + url)
         soup = BeautifulSoup(r.text)
-        table = soup.find("table", {"summary":"Kader"}).find_all("tr")
+        table = soup.find("div", {"data-target":"squadContent"}).find_all("a")
         for row in table:
-            if row.get("class") is not None and "tr_sep" not in row.get("class") and "zwischencaption" not in row.get("class"):
-                player_link = row.find("a").get("href")
+            if row.get("href") is not "#":
+                player_link = row.get("href")
                 yield from self.parse_player(player_link, season, club, interactive)
 
     def parse_player(self, url, season, club, interactive):
         r = requests.get(self.base + url)
         soup = BeautifulSoup(r.text)
-        p_name = soup.find("h1").get_text()
-        p_position = soup.find("tr", {"id":"ctl00_PlaceHolderContent_SpielerControl_SpielerControl_Spielerdaten_trPos"}).find_all("td")[1].get_text()
-        p_age = soup.find("table", {"class":"infoBox"}).find(text = "Geboren am:").findNext("td").get_text()
+        p_name = soup.find("h2").get_text()
+        p_position = soup.find(text="Position").findNext("td").get_text()
+        p_age = soup.find(text = "Geboren am").findNext("td").get_text()
+        p_age = re.search("[0-9]{2}\.[0-9]{2}\.[0-9]{4}", p_age)[0]
         reference_date = datetime.strptime("01.08.20"+str(season), '%d.%m.%Y')
         age_date = datetime.strptime(p_age, '%d.%m.%Y')
         p_age = reference_date.year - age_date.year - ((reference_date.month, reference_date.day) < (age_date.month, age_date.day))
@@ -79,9 +78,9 @@ class Parser:
         if interactive:
             yield p_name, p_position, p_age, p_club
         else:
-            p_points = self.calc_points(soup, p_position)
+            p_points = self.calc_points(soup, p_position, p_club)
             yield p_name, p_position, p_age, p_club, p_points
-    def calc_points(self, soup, pos):
+    def calc_points(self, soup, pos, club):
         # eingewechselt - spiele => start bonus
         # Gesamttore * Punkte für Tore
         # Gesamtassist => Punkte für Assists
@@ -89,23 +88,25 @@ class Parser:
         # Noten einzeln parsen
         # gelb-rot / rot aus summary
         # zu Null bei TW
-        table_summary = soup.find("tr", {"id": "a_sld_liga"}).find_all("td")
+        table_summary = soup.find("tr", {"class": "kick__js-open-saison-detail"}).find_all("td")
         pts_einwechsel = int(table_summary[7].get_text()) * self.punkte["Joker"]
         pts_tore = int(table_summary[3].get_text()) * self.punkte["Tor"][pos]
         pts_ass = int(table_summary[5].get_text()) * self.punkte["Assist"]
         pts_start = (int(table_summary[1].get_text().split("/")[0]) - pts_einwechsel) * self.punkte["Start"]
-        pts_rot = int(table_summary[9].get_text()) * self.punkte["Rot"]
+        pts_rot = int(table_summary[11].get_text()) * self.punkte["Rot"]
         pts_gelb_rot = int(table_summary[10].get_text()) * self.punkte["Gelb-Rot"]
         pts_note = 0
         pts_null = 0
-        table_detail = soup.find("tr", {"id": "sld_liga_0"}).find("table").find_all("tr")
+        table_detail = soup.find_all("tr", {"class": "kick__vita__statistic--table-second--1 kick__vita__statistic--table-second"})
         for row in table_detail[1:]:
             if "tr_sep" not in row.get("class"):
                 fields = row.find_all("td")
-                pts_note += self.punkte["Note"].get(fields[4].get_text(), 0)
-                if pos == "Torwart":
-                    game_res = fields[3].find("a").get_text()
-                    zu_null = int(game_res.split()[0].split(":")[1])
+                pts_note += self.punkte["Note"].get(fields[1].get_text(), 0)
+                if pos == "Tor":
+                    if row.find_all("div", {"class": "kick__v100-gameCell__team__name"})[0].get_text() is club:
+                        zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[1].get_text())
+                    else:
+                        zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[0].get_text())
                     if zu_null == 0:
                         pts_null += self.punkte["zuNull"]
         return sum([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
@@ -127,7 +128,7 @@ class Parser:
 def main():
     p = Parser()
     #p.parse_interactive()
-    p.parse(interactive=True)
+    p.parse(interactive=False)
 
 if __name__ == "__main__":
     main()

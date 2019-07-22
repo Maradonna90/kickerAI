@@ -57,47 +57,24 @@ def main():
     #train = pandas.DataFrame(x_train.assign(pts=y_train), columns=['name', 'position', 'age', 'club', 'pts'])
     X_train, X_test = vec.transform(x_train.to_dict('records')), vec.transform(x_test.to_dict('records'))
     pred_data = vec.transform(pred_data.to_dict('records'))
-    #DEEP NETWORK
-    #print(X_train, y_train)
-    #none = vec.vocabulary_['club=None']
-    #for p in X_train:
-    #    if p[none] == 1:
-    #        p = np.full(p.shape, 2)
+    
     X_train = pandas.DataFrame(X_train).values
     X_test = pandas.DataFrame(X_test).values
     y_train = pandas.DataFrame(y_train).values
     y_test = pandas.DataFrame(y_test).values
     
-    # lstm reshape
-    #X_train = X_train.reshape((X_train.shape[0], 1, X_train.shape[1]))
-    #X_test = X_test.reshape((X_test.shape[0], 1, X_test.shape[1]))
-    #pred_data = pred_data.reshape((pred_data.shape[0], 1, pred_data.shape[1]))
     # init other
     kf = KFold(shuffle=True)
     tscv = TimeSeriesSplit(n_splits=3)
     scaler = StandardScaler()
-    
-    #init model
-    #dnn = KerasRegressor(build_fn=baseline_model, nb_epoch=100, batch_size=5, verbose=0)
-    #lstm = KerasRegressor(build_fn=lstm_model, epochs=100, batch_size=24, verbose=1)
-    #lstm = KerasRegressor(build_fn=lstm_model, epochs=200, batch_size=1, verbose=0)
-
-    #svr = SVR()
     lgbm = lgb.LGBMRegressor(boosting_type='dart', num_leaves=40, learning_rate=0.1)
 
     #get interactive data
     p = Parser()
-    #p_int = p.parse_interactive()
+    p_int = p.parse_interactive()
     
-    #run_model("LSTM", lstm, [], X_train, X_test, y_train, y_test, tscv, vec, cv=False, out=False, pred_data=None, price_data=None, hyper=True)
-    #run_model("SVR", svr, [scaler], X_train, X_test, y_train, y_test, kf, cv=True)
-    run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data)
+    run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=p_int)
 
-
-    #p = Parser()
-    #p_int = p.parse_interactive()
-    #TODO: Parse all data for 'active' season (club, age, position, name)
-    #TODO: Match result data with interactive data
 
 def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, non_cv=False, cv=False, out=False, para=False, pred_data=None, price_data=None, hyper=False):
     print("starting", name)
@@ -133,7 +110,7 @@ def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, 
         y_all = np.concatenate([y_train, y_test])
         clf.fit(x_all, y_all)
         predict = clf.predict(pred_data)
-        pred_data = pred_data.reshape(pred_data.shape[0], pred_data.shape[2])
+        pred_data = pred_data.reshape(pred_data.shape[0], pred_data.shape[1])
         res = []
         for p_name, p_price, p_club in price_data:
             p_out = []
@@ -163,16 +140,6 @@ def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, 
         report(random_search.cv_results_)
 
 
-def baseline_model():
-    # create model
-    model = Sequential()
-    model.add(Dense(4, input_dim=1344, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(2, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(1, kernel_initializer='normal'))
-    # Compile model
-    model.compile(loss='mean_squared_error', optimizer=["adam", "adamax", "adadelta", "rmsprop", "sgd"])
-    return model
-
 def dict_list_transform(x_data, y_data):
     x_res = []
     y_res = []
@@ -181,58 +148,6 @@ def dict_list_transform(x_data, y_data):
             x_res.append([player['name'], player['position'], player['age'], player['club']])
             y_res.append(pts)
     return x_res, y_res
-
-def transform_to_lstm (x_data, y_data):
-    # batch-size = lenght of career
-    # timesteps = 1
-    player_series = {}
-    pts_series = {}
-    time_series = []
-    point_series = []
-    # make a dict with player name as key. after running through season data add masking entries and sort
-    for season, season_pts in zip(x_data.values(), y_data.values()):
-        for player, pts in zip(season, season_pts):
-            #print(player)
-            # add player data into a list in the dict
-            player_series.setdefault(player['name'], []).append([player['name'], player['position'], player['age'], player['club']])
-            pts_series.setdefault(player['name'], []).append(pts)
-    for player, pts in zip(player_series.items(), pts_series.items()):
-        #print(player)
-        age = list(range(16,40))
-        p_age = [i[2] for i in player[1]]
-        age_cnt = [k for k,v in Counter(p_age).items() if v>1]
-        #print(p_age)
-        # add masking values if needed
-        for a in age:
-            if str(a) not in p_age:
-                player[1].append([player[0], player[1][0][1], str(a), 'None'])
-                pts[1].append(0)
-            elif str(a) in age_cnt:
-                doubles = [p for p in player[1] if str(a) in p[2]]
-                doubles_pts = [pt for pt, p in zip(pts[1], player[1]) if str(a) in p[2]]
-                pts[1].remove(doubles_pts[0])
-                player[1].remove(doubles[0])
-        # sort everything accordingly
-        pts = (pts[0], [x for _, x in sorted(zip(player[1],pts[1]), key=lambda pair: pair[0][2])])
-        player = (player[0], sorted(player[1], key=lambda pd : pd[2]))
-        #if len(pts[1]) != 24 or len(player[1]) != 24 :
-        #    print(len(player[1]), len(pts[1]))
-        #    print(player)
-        time_series.extend(player[1])
-        point_series.extend(pts[1])
-    #print(time_series, point_series)
-    return time_series, point_series
-
-def lstm_model(optimizer='adam'):
-    model = Sequential()
-    #model.add(Masking(mask_value=2, batch_input_shape=(24, 1, 1471)))
-    #model.add(LSTM(4, input_shape=(None,1471), return_sequences=False, stateful=False))
-    model.add(LSTM(4, input_shape=(None,1587), return_sequences=False, stateful=False))
-
-    #model.add(LSTM(4, input_shape=(None,1471)))
-    model.add(Dense(1))
-    model.compile(loss='mean_squared_error', optimizer=optimizer)
-    return model
 
 def write(filename, res):
     with open(filename+'.csv', 'w', newline='\n') as csvfile:
