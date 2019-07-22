@@ -73,7 +73,7 @@ def main():
     #get interactive data
     p = Parser()
     p_int = p.parse_interactive()
-    run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=False, out=False, pred_data=pred_data, price_data=None, hyper=True)
+    run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
     #run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=None, price_data=p_int, hyper=True)
 
 
@@ -97,7 +97,7 @@ def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, 
 
     if out:
         res = []
-        x_test = x_test.reshape(x_test.shape[0], x_test.shape[2])
+        x_test = x_test.reshape(x_test.shape[0], x_test.shape[1])
         #print(vec.inverse_transform(x_test))
         for player, test, prediction in zip(vec.inverse_transform(x_test), y_test, predict):
             player = [p.split("=")[1] for p in player.keys()]
