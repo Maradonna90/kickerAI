@@ -4,11 +4,11 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.metrics import mean_squared_error, make_scorer
 from sklearn.pipeline import make_pipeline
-from sklearn.svm import SVR
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Masking
 from keras.wrappers.scikit_learn import KerasRegressor
 from collections import Counter
+from sklearn.linear_model import BayesianRidge
 import csv
 from time import time
 from scipy.stats import randint as sp_randint
@@ -19,7 +19,7 @@ import pandas
 import lightgbm as lgb
 def main():
     r = Reader()
-    seasons = [10, 11, 12, 13, 14, 15, 16, 17]
+    seasons = [10, 11, 12, 13, 14, 15, 16, 17, 18]
     x_train = {}
     y_train = {}
     x_test = {}
@@ -32,10 +32,10 @@ def main():
     x_test[seasons[-1]], y_test[seasons[-1]] = x, y
     
     #  read pred_data
-    x, y = r.read("data/18.csv", interactive=True)
+    x, y = r.read("data/19.csv", interactive=True)
     x_pred = {}
     y_pred = {}
-    x_pred[18], y_pred[18] = x, y
+    x_pred[19], y_pred[19] = x, y
 
    
     #x_test.update(x_train)
@@ -68,12 +68,13 @@ def main():
     tscv = TimeSeriesSplit(n_splits=3)
     scaler = StandardScaler()
     lgbm = lgb.LGBMRegressor(boosting_type='dart', num_leaves=40, learning_rate=0.1)
-
+    brdg = BayesianRidge(compute_score=True)
+    
     #get interactive data
     p = Parser()
     p_int = p.parse_interactive()
-    
-    run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=p_int)
+    run_model("LinearRegression", lin, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=p_int)
+    #run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=p_int)
 
 
 def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, non_cv=False, cv=False, out=False, para=False, pred_data=None, price_data=None, hyper=False):
