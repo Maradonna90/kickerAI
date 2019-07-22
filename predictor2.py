@@ -73,8 +73,8 @@ def main():
     #get interactive data
     p = Parser()
     p_int = p.parse_interactive()
-    run_model("LinearRegression", lin, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=p_int)
-    #run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=p_int)
+    run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=True)
+    #run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=None, price_data=p_int, hyper=True)
 
 
 def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, non_cv=False, cv=False, out=False, para=False, pred_data=None, price_data=None, hyper=False):
@@ -124,13 +124,16 @@ def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, 
         write(name+"-pred-real", res)
 
     if hyper:
-        optimizers = ["adam", "adamax", "adadelta", "rmsprop", "sgd"]
-        epochs = sp_randint(100,2001)
+        param_dist = {"alpha_1": sp_randint(0.000001, 0.00000001),
+              "alpha_2": sp_randint(0.000001, 0.00000001),
+              "lambda_1": sp_randint(0.000001, 0.00000001),
+              "lambda_2": sp_randint(0.000001, 0.00000001),
+              "n_iter": sp_randint(200, 1001)}
         clf = model
         scorer = make_scorer(mean_squared_error, greater_is_better=False)
         x_all = np.concatenate([x_train,x_test])
         y_all = np.concatenate([y_train, y_test])
-        param_dist = dict(optimizer=optimizers, epochs=epochs)
+        #param_dist = dict(optimizer=optimizers, epochs=epochs)
         random_search = RandomizedSearchCV(clf, param_distributions=param_dist,
                                    n_iter=10, verbose=2, scoring=scorer, n_jobs=multiprocessing.cpu_count(), cv=kfold)
         start = time()
