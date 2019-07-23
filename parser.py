@@ -9,7 +9,7 @@ from datetime import date, datetime
 
 class Parser:
     def __init__(self):
-        self.seasons = range(5, 10)
+        self.seasons = [1,2,3,4,5,6,7,8,9]
         self.url = 'http://www.kicker.de/news/fussball/bundesliga/vereine/1-bundesliga/20XX-YY/vereine-liste.html'
         self.base = 'http://www.kicker.de'
         self.punkte = {"Note": {
@@ -40,7 +40,7 @@ class Parser:
     def parse(self, interactive=False):
         for season in self.seasons:
             print("parsing season", season)
-            with open(str(season)+'.csv', 'w', newline='\n') as csvfile:
+            with open(str(season).zfill(2)+'.csv', 'w', newline='\n') as csvfile:
                 writer = csv.writer(csvfile)
                 season_data = self.parse_season(season, interactive)
                 for data in season_data:
@@ -74,7 +74,7 @@ class Parser:
         p_position = soup.find(text="Position").findNext("td").get_text()
         p_age = soup.find(text = "Geboren am").findNext("td").get_text()
         p_age = re.search("[0-9]{2}\.[0-9]{2}\.[0-9]{4}", p_age)[0]
-        reference_date = datetime.strptime("01.08.20"+str(season), '%d.%m.%Y')
+        reference_date = datetime.strptime("01.08.20"+str(season).zfill(2), '%d.%m.%Y')
         age_date = datetime.strptime(p_age, '%d.%m.%Y')
         p_age = reference_date.year - age_date.year - ((reference_date.month, reference_date.day) < (age_date.month, age_date.day))
         p_club = club
@@ -131,7 +131,7 @@ class Parser:
 def main():
     p = Parser()
     #p.parse_interactive()
-    p.parse(interactive=True)
+    p.parse(interactive=False)
 
 if __name__ == "__main__":
     main()
