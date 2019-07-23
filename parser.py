@@ -9,7 +9,7 @@ from datetime import date, datetime
 
 class Parser:
     def __init__(self):
-        self.seasons = [1,2,3,4,5,6,7,8,9]
+        self.seasons = [7,8,9]
         self.url = 'http://www.kicker.de/news/fussball/bundesliga/vereine/1-bundesliga/20XX-YY/vereine-liste.html'
         self.base = 'http://www.kicker.de'
         self.punkte = {"Note": {
@@ -93,7 +93,10 @@ class Parser:
         # zu Null bei TW
         table_summary = soup.find("tr", {"class": "kick__js-open-saison-detail"}).find_all("td")
         pts_einwechsel = int(table_summary[7].get_text()) * self.punkte["Joker"]
-        pts_tore = int(table_summary[3].get_text()) * self.punkte["Tor"][pos]
+        if pos == 'Unbekannt':
+            pts_tore = int(table_summary[3].get_text())* self.punkte["Tor"]["Mittelfeld"]
+        else:
+            pts_tore = int(table_summary[3].get_text()) * self.punkte["Tor"][pos]
         pts_ass = int(table_summary[5].get_text()) * self.punkte["Assist"]
         pts_start = (int(table_summary[1].get_text().split("/")[0]) - pts_einwechsel) * self.punkte["Start"]
         pts_rot = int(table_summary[11].get_text()) * self.punkte["Rot"]
