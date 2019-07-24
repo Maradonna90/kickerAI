@@ -10,10 +10,12 @@ n_iter=300, ,alpha_1=1e-06, alpha_2=1e-06, lambda_1=1e-06, lambda_2=1e-06
 # TODO
 * goalie zuNull wrong calc
 * negative calc_points
+* create an rpi as scraper
 
 # What to analyse
 * prediction accuracy per position
 * prediction accuracy per range of real points (<0, 0-25, 26-50, 51-75, 76-100, 101-125, 126-150, 150+) 
 * prediction accuracy per range of predicted points
 * accuracy per team
+
 
