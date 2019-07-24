@@ -9,7 +9,7 @@ from datetime import date, datetime
 
 class Parser:
     def __init__(self):
-        self.seasons = [7,8,9]
+        self.seasons = [9]
         self.url = 'http://www.kicker.de/news/fussball/bundesliga/vereine/1-bundesliga/20XX-YY/vereine-liste.html'
         self.base = 'http://www.kicker.de'
         self.punkte = {"Note": {
@@ -62,6 +62,7 @@ class Parser:
         for row in table:
             if row.get("href") is not "#":
                 player_link = row.get("href")
+                print("Parsing Player: ", player_link)
                 yield from self.parse_player(player_link, season, club, interactive)
 
     def parse_player(self, url, season, club, interactive):
@@ -107,14 +108,15 @@ class Parser:
         for row in table_detail[1:]:
             if "tr_sep" not in row.get("class"):
                 fields = row.find_all("td")
-                pts_note += self.punkte["Note"].get(fields[1].get_text(), 0)
-                if pos == "Tor":
-                    if row.find_all("div", {"class": "kick__v100-gameCell__team__name"})[0].get_text() is club:
-                        zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[1].get_text())
-                    else:
-                        zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[0].get_text())
-                    if zu_null == 0:
-                        pts_null += self.punkte["zuNull"]
+                if len(fields) is 12:
+                    pts_note += self.punkte["Note"].get(fields[1].get_text(), 0)
+                    if pos == "Tor":
+                        if row.find_all("div", {"class": "kick__v100-gameCell__team__name"})[0].get_text() is club:
+                            zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[1].get_text())
+                        else:
+                            zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[0].get_text())
+                        if zu_null == 0:
+                            pts_null += self.punkte["zuNull"]
         return sum([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
     def parse_interactive(self):
         print("Start Parsing Interactive")
