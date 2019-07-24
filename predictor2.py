@@ -19,16 +19,16 @@ import pandas
 import lightgbm as lgb
 def main():
     r = Reader()
-    seasons = [10, 11, 12, 13, 14, 15, 16, 17, 18]
+    seasons = [0,1,2,3,4,5,6,8,9,10, 11, 12, 13, 14, 15, 16, 17, 18]
     x_train = {}
     y_train = {}
     x_test = {}
     y_test = {}
     vec = DictVectorizer(sparse=False)
     for season in seasons[:-1]:
-        x, y = r.read("data/"+str(season)+".csv")
+        x, y = r.read("data/"+str(season).zfill(2)+".csv")
         x_train[season], y_train[season] = x, y
-    x, y = r.read("data/"+str(seasons[-1])+".csv")
+    x, y = r.read("data/"+str(seasons[-1]).zfill(2)+".csv")
     x_test[seasons[-1]], y_test[seasons[-1]] = x, y
     
     #  read pred_data
@@ -73,8 +73,8 @@ def main():
     #get interactive data
     p = Parser()
     p_int = p.parse_interactive()
-    run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
-    #run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=None, price_data=p_int, hyper=True)
+    #run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
+    run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=None, price_data=p_int, hyper=False)
 
 
 def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, non_cv=False, cv=False, out=False, para=False, pred_data=None, price_data=None, hyper=False):
