@@ -106,17 +106,16 @@ class Parser:
         pts_null = 0
         table_detail = soup.find_all("tr", {"class": "kick__vita__statistic--table-second--1 kick__vita__statistic--table-second"})
         for row in table_detail[1:]:
-            if "tr_sep" not in row.get("class"):
-                fields = row.find_all("td")
-                if len(fields) is 12:
-                    pts_note += self.punkte["Note"].get(re.search("[0-9],[0-9]" , fields[1].get_text())[0], 0)
-                    if pos == "Tor":
-                        if row.find_all("div", {"class": "kick__v100-gameCell__team__name"})[0].get_text() is club:
-                            zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[1].get_text())
-                        else:
-                            zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[0].get_text())
-                        if zu_null == 0:
-                            pts_null += self.punkte["zuNull"]
+            fields = row.find_all("td")
+            if len(fields) is 12:
+                pts_note += self.punkte["Note"].get(re.search("[0-9],[0-9]" , fields[1].get_text()), 0)
+                if pos == "Tor":
+                    if row.find_all("div", {"class": "kick__v100-gameCell__team__name"})[0].get_text() is club:
+                        zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[1].get_text())
+                    else:
+                        zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[0].get_text())
+                    if zu_null == 0:
+                        pts_null += self.punkte["zuNull"]
         print([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
         return
         return sum([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
