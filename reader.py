@@ -8,8 +8,8 @@ class Reader():
             y_result = []
             for row in reader:
                 if prediction:
-                    x_result.append({"name": row[0], "age": row[1], "club": row[2], "position": row[3], "real_pts": row[4]})
-                    y_result.append(float(row[4]))
+                    x_result.append({"name": row[0], "age": row[1], "club": row[2], "position": row[3], "real_pts": float(row[4])})
+                    y_result.append(float(row[5]))
                     continue
                 x_result.append({"name": row[0], "position": row[1], "age": row[2], "club": row[3]})
                 if interactive:
