@@ -116,8 +116,7 @@ class Parser:
                         zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[0].get_text())
                     if zu_null == 0:
                         pts_null += self.punkte["zuNull"]
-        print([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
-        return
+        #print([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
         return sum([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
     def parse_interactive(self):
         print("Start Parsing Interactive")
