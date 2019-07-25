@@ -9,7 +9,10 @@ from datetime import date, datetime
 
 class Parser:
     def __init__(self):
-        self.seasons = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
+        self.seasons = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
+        self.name_regex = re.compile("[\wöäüß\-]+", re.IGNORECASE)
+        self.geb_regex = re.compile("[0-9]{2}\.[0-9]{2}\.[0-9]{4}")
+        self.noten_regex = re.compile("[0-9],[0-9]")
         self.url = 'http://www.kicker.de/news/fussball/bundesliga/vereine/1-bundesliga/20XX-YY/vereine-liste.html'
         self.base = 'http://www.kicker.de'
         self.punkte = {"Note": {
@@ -69,12 +72,12 @@ class Parser:
         r = requests.get(self.base + url)
         soup = BeautifulSoup(r.text)
         p_name = soup.find("h2").get_text()
-        name = re.findall("[\wöäüß\-]+", p_name, re.IGNORECASE)
+        name = self.name_regex.findall(p_name)
         #print(name)
         p_name = ' '.join(name[::-1])
         p_position = soup.find(text="Position").findNext("td").get_text()
         p_age = soup.find(text = "Geboren am").findNext("td").get_text()
-        p_age = re.search("[0-9]{2}\.[0-9]{2}\.[0-9]{4}", p_age)[0]
+        p_age = self.geb_regex.search(p_age)[0]
         reference_date = datetime.strptime("01.08.20"+str(season).zfill(2), '%d.%m.%Y')
         age_date = datetime.strptime(p_age, '%d.%m.%Y')
         p_age = reference_date.year - age_date.year - ((reference_date.month, reference_date.day) < (age_date.month, age_date.day))
@@ -108,7 +111,7 @@ class Parser:
         for row in table_detail[1:]:
             fields = row.find_all("td")
             if len(fields) is 12:
-                pts_note += self.punkte["Note"].get(re.search("[0-9],[0-9]" , fields[1].get_text()), 0)
+                pts_note += self.punkte["Note"].get(self.noten_regex.search(fields[1].get_text()), 0)
                 if pos == "Tor":
                     if row.find_all("div", {"class": "kick__v100-gameCell__team__name"})[0].get_text() is club:
                         zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[1].get_text())
