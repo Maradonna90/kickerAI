@@ -89,7 +89,7 @@ class Parser:
                 p_points = self.calc_points(soup, p_position, p_club)
                 yield p_name, p_position, p_age, p_club, p_points
         except Exception as e:
-            print("ERROR:", e)
+            print("ERROR("+url+"):", e)
             pass
     def calc_points(self, soup, pos, club):
         # eingewechselt - spiele => start bonus
@@ -144,7 +144,7 @@ class Parser:
 def main():
     p = Parser()
     #p.parse_interactive()
-    #p.parse(interactive=False)
+    p.parse(interactive=False)
     #res = p.parse_player("/bauer-robert-79879/spieler/1-bundesliga/2018-19/1-fc-nuernberg-81", 18, "1. FC Nürnberg", False)
     #res = p.parse_player("/timmy-simons-27977/spieler/1-bundesliga/2010-11/1-fc-nuernberg-81", 10, "1. FC Nürnberg", False)
     #[print(r) for r in res]

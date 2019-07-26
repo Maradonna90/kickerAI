@@ -32,7 +32,7 @@ def main():
     x_test[seasons[-1]], y_test[seasons[-1]] = x, y
     
     #  read pred_data
-    x, y = r.read("data/19.csv", interactive=True)
+    x, y = r.read("new_data/19.csv", interactive=True)
     x_pred = {}
     y_pred = {}
     x_pred[19], y_pred[19] = x, y
