@@ -9,7 +9,7 @@ from datetime import date, datetime
 
 class Parser:
     def __init__(self):
-        self.seasons = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
+        self.seasons = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
         self.name_regex = re.compile("[\wöäüß\-]+", re.IGNORECASE)
         self.geb_regex = re.compile("[0-9]{2}\.[0-9]{2}\.[0-9]{4}")
         self.noten_regex = re.compile("[0-9],[0-9]")
@@ -65,28 +65,32 @@ class Parser:
         for row in table:
             if row.get("href") is not "#":
                 player_link = row.get("href")
-                print("Parsing Player: ", player_link)
+                #print("Parsing Player: ", player_link)
                 yield from self.parse_player(player_link, season, club, interactive)
 
     def parse_player(self, url, season, club, interactive):
         r = requests.get(self.base + url)
         soup = BeautifulSoup(r.text)
-        p_name = soup.find("h2").get_text()
-        name = self.name_regex.findall(p_name)
-        #print(name)
-        p_name = ' '.join(name[::-1])
-        p_position = soup.find(text="Position").findNext("td").get_text()
-        p_age = soup.find(text = "Geboren am").findNext("td").get_text()
-        p_age = self.geb_regex.search(p_age)[0]
-        reference_date = datetime.strptime("01.08.20"+str(season).zfill(2), '%d.%m.%Y')
-        age_date = datetime.strptime(p_age, '%d.%m.%Y')
-        p_age = reference_date.year - age_date.year - ((reference_date.month, reference_date.day) < (age_date.month, age_date.day))
-        p_club = club
-        if interactive:
-            yield p_name, p_position, p_age, p_club
-        else:
-            p_points = self.calc_points(soup, p_position, p_club)
-            yield p_name, p_position, p_age, p_club, p_points
+        try:
+            p_name = soup.find("h2").get_text()
+            name = self.name_regex.findall(p_name)
+            #print(name)
+            p_name = ' '.join(name[::-1])
+            p_position = soup.find(text="Position").findNext("td").get_text()
+            p_age = soup.find(text = "Geboren am").findNext("td").get_text()
+            p_age = self.geb_regex.search(p_age)[0]
+            reference_date = datetime.strptime("01.08.20"+str(season).zfill(2), '%d.%m.%Y')
+            age_date = datetime.strptime(p_age, '%d.%m.%Y')
+            p_age = reference_date.year - age_date.year - ((reference_date.month, reference_date.day) < (age_date.month, age_date.day))
+            p_club = club
+            if interactive:
+                yield p_name, p_position, p_age, p_club
+            else:
+                p_points = self.calc_points(soup, p_position, p_club)
+                yield p_name, p_position, p_age, p_club, p_points
+        except Exception as e:
+            print("ERROR:", e)
+            pass
     def calc_points(self, soup, pos, club):
         # eingewechselt - spiele => start bonus
         # Gesamttore * Punkte für Tore
@@ -111,7 +115,8 @@ class Parser:
         for row in table_detail[1:]:
             fields = row.find_all("td")
             if len(fields) is 12:
-                pts_note += self.punkte["Note"].get(self.noten_regex.search(fields[1].get_text()), 0)
+                if self.noten_regex.search(fields[1].get_text()):
+                    pts_note += self.punkte["Note"].get(self.noten_regex.search(fields[1].get_text())[0], 0)
                 if pos == "Tor":
                     if row.find_all("div", {"class": "kick__v100-gameCell__team__name"})[0].get_text() is club:
                         zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[1].get_text())
@@ -139,7 +144,10 @@ class Parser:
 def main():
     p = Parser()
     #p.parse_interactive()
-    p.parse(interactive=False)
+    #p.parse(interactive=False)
+    #res = p.parse_player("/bauer-robert-79879/spieler/1-bundesliga/2018-19/1-fc-nuernberg-81", 18, "1. FC Nürnberg", False)
+    #res = p.parse_player("/timmy-simons-27977/spieler/1-bundesliga/2010-11/1-fc-nuernberg-81", 10, "1. FC Nürnberg", False)
+    #[print(r) for r in res]
 
 if __name__ == "__main__":
     main()
