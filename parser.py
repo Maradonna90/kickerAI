@@ -128,7 +128,7 @@ class Parser:
         return sum([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
     def parse_interactive(self):
         print("Start Parsing Interactive")
-        f = open("/home/marco/Downloads/kicker.html")
+        f = open("/home/marco/Downloads/kicker19.html")
         soup = BeautifulSoup(f)
         f.close()
         table = soup.find("table", {"class":"tStat", "summary":""})
