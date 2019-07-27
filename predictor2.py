@@ -4,11 +4,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.metrics import mean_squared_error, make_scorer
 from sklearn.pipeline import make_pipeline
-from keras.models import Sequential
-from keras.layers import Dense, LSTM, Masking
-from keras.wrappers.scikit_learn import KerasRegressor
 from collections import Counter
-from sklearn.linear_model import BayesianRidge
+from sklearn.linear_model import BayesianRidge, Lasso, ElasticNet
+from sklearn.svm import SVR
 import csv
 from time import time
 from scipy.stats import randint as sp_randint
@@ -17,9 +15,13 @@ import multiprocessing
 from parser import Parser
 import pandas
 import lightgbm as lgb
-from skopt.space import Real, Integer
+import xgboost as xgb
+from xgboost.sklearn import XGBRegressor
+from skopt.space import Real, Integer, Categorical
 from skopt import gp_minimize
 from skopt.utils import use_named_args
+import warnings
+warnings.filterwarnings('ignore')
 
 def main():
     r = Reader()
@@ -34,7 +36,6 @@ def main():
         x_train[season], y_train[season] = x, y
     x, y = r.read("new_data/"+str(seasons[-1]).zfill(2)+".csv")
     x_test[seasons[-1]], y_test[seasons[-1]] = x, y
-    
     #  read pred_data
     x, y = r.read("new_data/19.csv", interactive=True)
     x_pred = {}
@@ -67,18 +68,43 @@ def main():
     y_train = pandas.DataFrame(y_train).values
     y_test = pandas.DataFrame(y_test).values
     
+    #lass
+    lasso = Lasso()
+    
+    #elasticNET
+    elnet = ElasticNet()
+
+    #SVR
+    svr = SVR(kernel='linear')
+    
+    #EnsembleRegressors
+
+
     # init other
-    kf = KFold(shuffle=True)
+    kf = KFold(shuffle=True, n_splits=5)
     tscv = TimeSeriesSplit(n_splits=3)
     scaler = StandardScaler()
-    lgbm = lgb.LGBMRegressor(boosting_type='dart', num_leaves=40, learning_rate=0.1)
+    xg_boost = xgb.XGBRegressor()
+    # num_leaves = 40, learning_rate=0.1
+    # learning_rate = 0.21170439574373004, max_depth = 29, num_leaves = 65, min_data_in_leaf = 19, feature_fraction = 0.7055648595623951, subsample = 0.7016019101304879, boostin type='goss
+    #lgbm = lgb.LGBMRegressor(learning_rate = 0.10167758525611793, max_depth = 25, num_leaves = 86, min_data_in_leaf = 849, feature_fraction = 0.6612073271073752, subsample = 0.44594353656343, boosting_type='gbdt')
+    #lgbm = lgb.LGBMRegressor()
     brdg = BayesianRidge(compute_score=True)
     
     #get interactive data
     p = Parser()
     p_int = p.parse_interactive()
-    #run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=p_int, hyper=False)
-    run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=False, out=False, pred_data=pred_data, price_data=None, hyper=True)
+    
+    run_model("SVR", svr, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
+
+    #run_model("elasticNet", elnet, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
+
+    #run_model("Lasso", lasso, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
+
+    #run_model("CatBoost", cat_boost, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
+    #run_model("XGBoost", xg_boost, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
+    #run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
+    #run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
 
 
 def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, non_cv=False, cv=False, out=False, para=False, pred_data=None, price_data=None, hyper=False):
@@ -128,13 +154,13 @@ def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, 
         write(name+"-pred-real", res)
 
     if hyper:
-        # 
         space = [Real(0.01, 0.5, name='learning_rate', prior='log-uniform'),
-         Integer(1, 30, name='max_depth'),
-         Integer(2, 100, name='num_leaves'),
-         Integer(10, 1000, name='min_data_in_leaf'),
-         Real(0.1, 1.0, name='feature_fraction', prior='uniform'),
-         Real(0.1, 1.0, name='subsample', prior='uniform'),
+            Integer(1, 30, name='max_depth'),
+            Integer(2, 100, name='num_leaves'),
+            Integer(10, 1000, name='min_data_in_leaf'),
+            Real(0.1, 1.0, name='feature_fraction', prior='uniform'),
+            Real(0.1, 1.0, name='subsample', prior='uniform'),
+            Categorical(['gbdt','dart','goss'], name='boosting_type'),
          ]
         x_all = np.concatenate([x_train,x_test])
         y_all = np.concatenate([y_train, y_test])
@@ -143,8 +169,8 @@ def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, 
         def objective(**params):
             model.set_params(**params)
             scorer = make_scorer(mean_squared_error, greater_is_better=False)
-            return np.mean(cross_val_score(model, x_all, y_all, cv=5, n_jobs=-1,scoring=scorer))
-        res_gp = gp_minimize(objective, space, n_calls=50, random_state=0)
+            return -np.mean(cross_val_score(model, x_all, y_all, cv=5, n_jobs=-1,scoring=scorer))
+        res_gp = gp_minimize(objective, space, n_calls=200, random_state=0)
         print("Best Score:", res_gp.fun)
         print("Parameter Vals:", res_gp.x)
 

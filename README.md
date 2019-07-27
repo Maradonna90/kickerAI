@@ -1,21 +1,28 @@
 # Results (2019)
 * LGBM
-	* test_avg_score = 1004.46
+	* train_avg_score = -1760.51
+	* test_avg_score = 2112.20
 * BRDG (stock)
-	* test_avg_score = 813.90
-* BRDG (tuned)
-n_iter=300, ,alpha_1=1e-06, alpha_2=1e-06, lambda_1=1e-06, lambda_2=1e-06
-	* test_avg_score =
+	* train_avg_score = -1381.04
+	* test_avg_score = 1722.98
+* XGB
+	* train_avg_score = -1655.42
+	* test_avg_score = 2031.60
+* Lasso
+	* train_avg_score = -1897.46
+	* test_avg_score = 1936.68
+* elasticNet
+	* train_avg_score = -2002.45
+	* test_avg_score = 1849.47
+* SVR (linear)
+	* train_avg_score = -1846.32
+	* test_avg_score = 1781.06
+* EnsembleRegressors
+	* train_avg_score = 
+	* test_avg_ score =
 
-# TODO
-* goalie zuNull wrong calc
-* negative calc_points
-* create an rpi as scraper
-
-# What to analyse
-* prediction accuracy per position
-* prediction accuracy per range of real points (<0, 0-25, 26-50, 51-75, 76-100, 101-125, 126-150, 150+) 
-* prediction accuracy per range of predicted points
-* accuracy per team
-
+# How to improve performance
+* more features via feature engineering?
+	* what features though?
+* more data?
 
