@@ -17,6 +17,10 @@ import multiprocessing
 from parser import Parser
 import pandas
 import lightgbm as lgb
+from skopt.space import Real, Integer
+from skopt import gp_minimize
+from skopt.utils import use_named_args
+
 def main():
     r = Reader()
     seasons = [0,1,2,3,4,5,6,8,9,10, 11, 12, 13, 14, 15, 16, 17, 18]
@@ -26,9 +30,9 @@ def main():
     y_test = {}
     vec = DictVectorizer(sparse=False)
     for season in seasons[:-1]:
-        x, y = r.read("data/"+str(season).zfill(2)+".csv")
+        x, y = r.read("new_data/"+str(season).zfill(2)+".csv")
         x_train[season], y_train[season] = x, y
-    x, y = r.read("data/"+str(seasons[-1]).zfill(2)+".csv")
+    x, y = r.read("new_data/"+str(seasons[-1]).zfill(2)+".csv")
     x_test[seasons[-1]], y_test[seasons[-1]] = x, y
     
     #  read pred_data
@@ -73,8 +77,8 @@ def main():
     #get interactive data
     p = Parser()
     p_int = p.parse_interactive()
-    #run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
-    run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=None, price_data=p_int, hyper=False)
+    #run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=p_int, hyper=False)
+    run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=False, out=False, pred_data=pred_data, price_data=None, hyper=True)
 
 
 def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, non_cv=False, cv=False, out=False, para=False, pred_data=None, price_data=None, hyper=False):
@@ -124,26 +128,25 @@ def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, 
         write(name+"-pred-real", res)
 
     if hyper:
-        param_dist = {"alpha_1": [0.00001, 0.000001, 0.0000001],
-              "alpha_2": [0.00001, 0.000001, 0.0000001],
-              "lambda_1": [0.00001, 0.000001, 0.0000001],
-              "lambda_2": [0.00001, 0.000001, 0.0000001],
-              "n_iter": [300]
-            }
-        clf = model
-        scorer = make_scorer(mean_squared_error, greater_is_better=False)
+        # 
+        space = [Real(0.01, 0.5, name='learning_rate', prior='log-uniform'),
+         Integer(1, 30, name='max_depth'),
+         Integer(2, 100, name='num_leaves'),
+         Integer(10, 1000, name='min_data_in_leaf'),
+         Real(0.1, 1.0, name='feature_fraction', prior='uniform'),
+         Real(0.1, 1.0, name='subsample', prior='uniform'),
+         ]
         x_all = np.concatenate([x_train,x_test])
         y_all = np.concatenate([y_train, y_test])
-        #param_dist = dict(optimizer=optimizers, epochs=epochs)
-        random_search = RandomizedSearchCV(clf, param_distributions=param_dist,
-                                   n_iter=10, verbose=2, scoring=scorer, n_jobs=multiprocessing.cpu_count(), cv=kfold)
-        start = time()
-
-        random_search.fit(x_all, y_all)
-        print("RandomizedSearchCV took %.2f seconds for %d candidates"
-            " parameter settings." % ((time() - start), 10))
-        report(random_search.cv_results_)
-
+        
+        @use_named_args(space)
+        def objective(**params):
+            model.set_params(**params)
+            scorer = make_scorer(mean_squared_error, greater_is_better=False)
+            return np.mean(cross_val_score(model, x_all, y_all, cv=5, n_jobs=-1,scoring=scorer))
+        res_gp = gp_minimize(objective, space, n_calls=50, random_state=0)
+        print("Best Score:", res_gp.fun)
+        print("Parameter Vals:", res_gp.x)
 
 def dict_list_transform(x_data, y_data):
     x_res = []
@@ -160,16 +163,5 @@ def write(filename, res):
         for data in res:
             writer.writerow(data)
 
-# Utility function to report best scores
-def report(results, n_top=3):
-    for i in range(1, n_top + 1):
-        candidates = np.flatnonzero(results['rank_test_score'] == i)
-        for candidate in candidates:
-            print("Model with rank: {0}".format(i))
-            print("Mean validation score: {0:.3f} (std: {1:.3f})".format(
-                  results['mean_test_score'][candidate],
-                  results['std_test_score'][candidate]))
-            print("Parameters: {0}".format(results['params'][candidate]))
-            print("")
 if __name__ == "__main__":
     main()
