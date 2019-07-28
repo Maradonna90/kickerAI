@@ -21,6 +21,20 @@
 	* train_avg_score = 
 	* test_avg_ score =
 
+* Lasso(alpha=0.1, selection='random', max_iter=500)
+	* train_avg_score = -1730.54
+	* test_avg_score = 1695.78
+* elasticNet(alpha=0.1, l1_ratio=1.0, selection='random', max_iter=1833)
+	* train_avg_score = -1727.11
+	* test_avg_score = 1695.77
+* SVR()
+	* training_avg_score =
+	* test_avg_score =
+* BRDG()
+	* training_avg_score = 
+	* test_avg_score = 
+=> SVR and BRDG fails
+
 # How to improve performance
 * more features via feature engineering?
 	* what features though?

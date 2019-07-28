@@ -69,10 +69,10 @@ def main():
     y_test = pandas.DataFrame(y_test).values
     
     #lass
-    lasso = Lasso()
+    lasso = Lasso(alpha=0.1, selection='random', max_iter=500)
     
     #elasticNET
-    elnet = ElasticNet()
+    elnet = ElasticNet(alpha=0.1, l1_ratio=1.0, selection="random", max_iter=1833)
 
     #SVR
     svr = SVR(kernel='linear')
@@ -95,15 +95,15 @@ def main():
     p = Parser()
     p_int = p.parse_interactive()
     
-    run_model("SVR", svr, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
+    #run_model("SVR", svr, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
 
-    #run_model("elasticNet", elnet, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
+    #run_model("elasticNet", elnet, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=p_int, hyper=False)
 
-    #run_model("Lasso", lasso, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
+    run_model("Lasso", lasso, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=p_int, hyper=False)
 
     #run_model("CatBoost", cat_boost, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
     #run_model("XGBoost", xg_boost, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
-    #run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
+    #run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=p_int, hyper=False)
     #run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
 
 
@@ -143,25 +143,38 @@ def run_model(name, model, steps, x_train, x_test, y_train, y_test, kfold, vec, 
         predict = clf.predict(pred_data)
         pred_data = pred_data.reshape(pred_data.shape[0], pred_data.shape[1])
         res = []
-        for p_name, p_price, p_club in price_data:
+        for p_name, p_price, p_club, p_pos in price_data:
             p_out = []
             for player, prediction in zip(vec.inverse_transform(pred_data), predict):
                 player = [p.split("=")[1] for p in player.keys()]
-                if p_club.lower() in player[1].lower() and p_name in player[2]:
+                if p_club.lower() in player[1].lower() and p_name in player[2] and p_pos in player[3]:
                     p_out = [player[2], player[0], player[1], player[3], prediction]
                     p_out.append(p_price)
             res.append(p_out)
         write(name+"-pred-real", res)
 
     if hyper:
-        space = [Real(0.01, 0.5, name='learning_rate', prior='log-uniform'),
-            Integer(1, 30, name='max_depth'),
-            Integer(2, 100, name='num_leaves'),
-            Integer(10, 1000, name='min_data_in_leaf'),
-            Real(0.1, 1.0, name='feature_fraction', prior='uniform'),
-            Real(0.1, 1.0, name='subsample', prior='uniform'),
-            Categorical(['gbdt','dart','goss'], name='boosting_type'),
-         ]
+        #space = [Integer(300,1000, name="n_iter"),
+        #        Real(0.000001, 0.0001, name='alpha_1'),
+        #        Real(0.000001, 0.0001, name='alpha_2'),
+        #        Real(0.000001, 0.0001, name='lambda_1'),
+        #        Real(0.000001, 0.0001, name='lambda_2'),
+        #        ]
+        #space = [Real(0.1, 1, name="alpha"),
+        #        Real(0,1, name="l1_ratio"),
+        #        Categorical(["cyclic", "random"], name="selection"),
+        #        Integer(500,2000, name="max_iter")]
+        #space = [Real(0.1, 1, name="alpha"),
+        #        Categorical(["cyclic", "random"], name="selection"),
+        #        Integer(500,2000, name="max_iter")]
+        #space = [Real(0.01, 0.5, name='learning_rate', prior='log-uniform'),
+        #    Integer(1, 30, name='max_depth'),
+        #    Integer(2, 100, name='num_leaves'),
+        #    Integer(10, 1000, name='min_data_in_leaf'),
+        #    Real(0.1, 1.0, name='feature_fraction', prior='uniform'),
+        #    Real(0.1, 1.0, name='subsample', prior='uniform'),
+        #    Categorical(['gbdt','dart','goss'], name='boosting_type'),
+        # ]
         x_all = np.concatenate([x_train,x_test])
         y_all = np.concatenate([y_train, y_test])
         

@@ -9,7 +9,7 @@ from datetime import date, datetime
 
 class Parser:
     def __init__(self):
-        self.seasons = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
+        self.seasons = [19]
         self.name_regex = re.compile("[\wöäüß\-]+", re.IGNORECASE)
         self.geb_regex = re.compile("[0-9]{2}\.[0-9]{2}\.[0-9]{4}")
         self.noten_regex = re.compile("[0-9],[0-9]")
@@ -131,20 +131,22 @@ class Parser:
         f = open("/home/marco/Downloads/kicker19.html")
         soup = BeautifulSoup(f)
         f.close()
+        posis = {"TOR": "Tor", "ABW" : "Abwehr", "MIT": "Mittelfeld", "STU": "Sturm"}
         table = soup.find("table", {"class":"tStat", "summary":""})
         rows = table.find_all("tr")
         for row in rows[1:]:
             if "tr_sep" not in row.get("class"):
                 name = row.find("a", {"class":"link"})
                 p_name = name.get_text()
+                p_pos = posis[name.findNext("td").findNext("td").get_text()]
                 p_price = name.findNext("td").findNext("td").findNext("td").get_text().replace(",", ".")
                 p_club = name.findNext("td").find("a", {"class":"link vrnMitLogo"}).get_text()
-                yield p_name, p_price, p_club
+                yield p_name, p_price, p_club, p_pos
 
 def main():
     p = Parser()
     #p.parse_interactive()
-    p.parse(interactive=False)
+    p.parse(interactive=True)
     #res = p.parse_player("/bauer-robert-79879/spieler/1-bundesliga/2018-19/1-fc-nuernberg-81", 18, "1. FC Nürnberg", False)
     #res = p.parse_player("/timmy-simons-27977/spieler/1-bundesliga/2010-11/1-fc-nuernberg-81", 10, "1. FC Nürnberg", False)
     #[print(r) for r in res]
