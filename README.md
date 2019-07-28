@@ -39,4 +39,45 @@
 * more features via feature engineering?
 	* what features though?
 * more data?
+* one specific regressor for each position
 
+# analyser
+* check accuracy for bin classificatioun
+
+# Conclusions
+* trust lasso and elastic on players with pred_pts < 25 and > 150
+* inbetween is very random worst range 75-125
+* Goalie prediction bad, probably bc unsure whos main and goalies do not injure as much and in general are not rotated due to fatigue
+
+# Strategies
+* pick goalies that are cheap and are starter by pred pts.
+* pick cheapest defenders if in random range, otherwise pick top
+* pick top MF
+* pick top ST
+
+# Teams
+* Lasso
+	* Timo Horn
+	* Jerome Roussillon
+	* Wout Weghorst
+	* Thomas Müller
+	* Claudio Pizarro
+	* Kevin Stöger
+	* Heintz
+	* Modeste
+	* Sahin
+	* hummels
+	* Witsel 
+
+* Handpicked
+	* Timo Horn
+	* Subotic
+	* Ndicka
+	* Plattenhardt
+	* Delaney
+	* Neuhaus
+	* Kampl
+	* Gnabry
+	* Plea
+	* Paco
+	* Poulsen
