@@ -20,6 +20,7 @@ from xgboost.sklearn import XGBRegressor
 from skopt.space import Real, Integer, Categorical
 from skopt import gp_minimize
 from skopt.utils import use_named_args
+from sklearn.preprocessing import PolynomialFeatures
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -31,6 +32,7 @@ def main():
     x_test = {}
     y_test = {}
     vec = DictVectorizer(sparse=False)
+    vec2 = DictVectorizer(sparse=True)
     for season in seasons[:-1]:
         x, y = r.read("new_data/"+str(season).zfill(2)+".csv")
         x_train[season], y_train[season] = x, y
@@ -57,34 +59,43 @@ def main():
     x_train = pandas.DataFrame(x_train, columns=['name', 'position', 'age', 'club'])
     x_test = pandas.DataFrame(x_test, columns=['name', 'position', 'age', 'club'])
     pred_data = pandas.DataFrame(pred_data, columns=['name', 'position', 'age', 'club'])
+    pred_data_sparse = pandas.DataFrame(pred_data, columns=['name', 'position', 'age', 'club'])
     vec.fit(x_all.to_dict('records'))
+    vec2.fit(x_all.to_dict('records'))
+
     #print(x_test.to_dict('records'))
     #train = pandas.DataFrame(x_train.assign(pts=y_train), columns=['name', 'position', 'age', 'club', 'pts'])
     X_train, X_test = vec.transform(x_train.to_dict('records')), vec.transform(x_test.to_dict('records'))
     pred_data = vec.transform(pred_data.to_dict('records'))
     
+    X_train_sparse, X_test_sparse = vec2.transform(x_train.to_dict('records')), vec2.transform(x_test.to_dict('records'))
+    pred_data_sparse = vec2.transform(pred_data_sparse.to_dict('records'))
+    
+    #X_train_sparse = pandas.DataFrame(X_train_sparse).values
+    #X_test_sparse = pandas.DataFrame(X_test_sparse).values
+
     X_train = pandas.DataFrame(X_train).values
     X_test = pandas.DataFrame(X_test).values
     y_train = pandas.DataFrame(y_train).values
     y_test = pandas.DataFrame(y_test).values
     
     #lass
-    lasso = Lasso(alpha=0.1, selection='random', max_iter=500)
+    #lasso = Lasso(alpha=0.1, selection='random', max_iter=500)
+    lasso = Lasso()
     
     #elasticNET
     elnet = ElasticNet(alpha=0.1, l1_ratio=1.0, selection="random", max_iter=1833)
 
-    #SVR
-    svr = SVR(kernel='linear')
-    
-    #EnsembleRegressors
-
-
     # init other
     kf = KFold(shuffle=True, n_splits=5)
     tscv = TimeSeriesSplit(n_splits=3)
-    scaler = StandardScaler()
-    xg_boost = xgb.XGBRegressor()
+    scaler = StandardScaler(with_mean=False)
+    
+    #TODO: Poly regression
+    poly = PolynomialFeatures(interaction_only=True, degree=3)
+    print(X_train.shape)
+    poly.fit(X_train_sparse)
+    res = poly.transform(X_train_sparse)
     # num_leaves = 40, learning_rate=0.1
     # learning_rate = 0.21170439574373004, max_depth = 29, num_leaves = 65, min_data_in_leaf = 19, feature_fraction = 0.7055648595623951, subsample = 0.7016019101304879, boostin type='goss
     #lgbm = lgb.LGBMRegressor(learning_rate = 0.10167758525611793, max_depth = 25, num_leaves = 86, min_data_in_leaf = 849, feature_fraction = 0.6612073271073752, subsample = 0.44594353656343, boosting_type='gbdt')
@@ -97,13 +108,13 @@ def main():
     
     #run_model("SVR", svr, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
 
-    #run_model("elasticNet", elnet, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=p_int, hyper=False)
+    #run_model("elasticNet", elnet, [scaler, poly], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
 
-    run_model("Lasso", lasso, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=p_int, hyper=False)
+    run_model("Lasso", lasso, [poly], X_train_sparse, X_test_sparse, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
 
     #run_model("CatBoost", cat_boost, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
     #run_model("XGBoost", xg_boost, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=None, hyper=False)
-    #run_model("BayesianRidge", brdg, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=True, pred_data=pred_data, price_data=p_int, hyper=False)
+    #run_model("BayesianRidge", brdg, [poly], X_train_sparse, X_test_sparse, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
     #run_model("LGBM", lgbm, [scaler], X_train, X_test, y_train, y_test, kf, vec, cv=True, out=False, pred_data=pred_data, price_data=None, hyper=False)
 
 
