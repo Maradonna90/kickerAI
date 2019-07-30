@@ -48,6 +48,14 @@
 * trust lasso and elastic on players with pred_pts < 25 and > 150
 * inbetween is very random worst range 75-125
 * Goalie prediction bad, probably bc unsure whos main and goalies do not injure as much and in general are not rotated due to fatigue
+* Regressor per position
+* more individual stats
+	* whoscored.com
+	* https://www.whoscored.com/StatisticsFeed/1/GetPlayerStatistics?category=summary&subcategory=all&statsAccumulationType=0&isCurrent=true&stageId=15243&tournamentOptions=3&sortBy=Rating&field=Overall&isMinApp=false&page=1&numberOfPlayersToPick=1000
+		* subcategory: passing, offensive, defensive, summary
+		* alle season so holen, dann zippen und parsen und mergen mit den punkten
+	* understat.com
+	* 
 
 # Strategies
 * pick goalies that are cheap and are starter by pred pts.
