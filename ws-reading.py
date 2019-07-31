@@ -25,9 +25,16 @@ def main():
     #print(k_data_y)
 
 
+def ws_refresh_database(db, data):
+    #TODO: refresh the database, add new entries if needed.
+    pass
+
 def ws_merge_kicker(k, ws):
     pass
     #TODO: apply merge. WS always has priority!
+    #TODO: check at first for relevant entries (non-duplicates)
+    #TODO: than get the replacements
+    #TODO: than replace with transporting data
 
 def fuzzy_merge(df_1, df_2, key1, key2, threshold=80, limit=1):
     '''
@@ -39,10 +46,13 @@ def fuzzy_merge(df_1, df_2, key1, key2, threshold=80, limit=1):
     limit is the amount of matches will get returned, these are sorted high to low
     '''
     s = df_2[key2].tolist()
-
+    
+    # get the current row a match from the list of df_2 entries in key2 column
     m = df_1[key1].apply(lambda x: process.extract(x, s, limit=limit))
+    # put the found matches from df_2 into column 'matches' in df_1
     df_1['matches'] = m
 
+    # filter all matches above a given threshold and refresh column
     m2 = df_1['matches'].apply(lambda x: ', '.join([i[0] for i in x if i[1] >= threshold]))
     df_1['matches'] = m2
 
