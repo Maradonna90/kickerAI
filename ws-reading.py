@@ -3,40 +3,50 @@ import pandas as pd
 from reader import Reader
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
+from bidict import bidict
 def main():
+    #seasons = [9,10,11]
     seasons = [9,10,11,12,13,14,15,16,17,18]
     data = {}
-    k_data_x = {}
-    k_data_y = {}
     r = Reader()
+    clubs = []
+    names = []
     for season in seasons:
+        k_data_x = {}
+        k_data_y = {}
+        k_data = {}
         del_cols = ["height", "weight", "age", "isManOfTheMatch", "isActive", "playedPositions", "playedPositionsShort", "teamRegionName", "regionCode", "tournamentShortName", "playerId", "positionText", "teamId", "teamName", "seasonId", "seasonName", "isOpta", "tournamentId", "tournamentRegionId", "tournamentRegionCode", "tournamentRegionName", "tournamentName"]
         data[season] = pd.DataFrame.from_dict(ws_read_json(season)).drop(columns=del_cols)
         k_data_x[season], k_data_y[season] = r.read("new_data/"+str(season).zfill(2)+".csv")
         k_data_x[season] = pd.DataFrame.from_dict(k_data_x[season])
-        k_data_y[season] = pd.DataFrame.from_records({"pts": k_data_y[season]}, columns=["pts"])
-        check_fuzzy_proposals(k_data_x[season], data[season])
-        new_data = ws_merge_kicker(k_data_x[season], data[season])
-        print(new_data.shape)
-        print(new_data)
-        break
-    #print(data)
-    #print(k_data_x)
-    #print(k_data_y)
+        k_data_x[season]["pts"] = k_data_y[season]
+        k_data[season] = k_data_x[season]
+        data[season] = ws_merge_kicker(k_data[season], data[season])
+        clubs.extend(data[season]['club'].drop_duplicates().values.tolist())
+        names.extend(data[season]['name'].drop_duplicates().values.tolist())
+    ws_refresh_database("clubs", clubs)
+    ws_refresh_database("names", names)
 
-
-def ws_refresh_database(db, data):
-    #TODO: refresh the database, add new entries if needed.
-    pass
+def ws_refresh_database(db_name, data):
+    db = bidict({})
+    db.load("db/"+db_name)
+    for dat in data:
+        if dat not in db.keys():
+            db[dat] = len(db.values())
+    db.save("db/"+db_name)
 
 def ws_merge_kicker(k, ws):
-    pass
-    #TODO: apply merge. WS always has priority!
-    #TODO: check at first for relevant entries (non-duplicates)
-    #TODO: than get the replacements
-    #TODO: than replace with transporting data
+    k = k.drop_duplicates(subset=['name'], keep='first')
+    ws = ws.drop_duplicates(subset=['name'], keep='first')
+    print(ws.shape)
+    merged = fuzzy_merge(ws, k, 'name', 'name')
+    merged = merged.merge(k, how='inner', left_on=['matches'], right_on=['name'])
+    merged = merged.drop(["name_y", "matches"], axis=1)
+    merged.rename(columns={'name_x': 'name'}, inplace=True)
+    print(merged.shape)
+    return merged
 
-def fuzzy_merge(df_1, df_2, key1, key2, threshold=80, limit=1):
+def fuzzy_merge(df_1, df_2, key1, key2, threshold=70, limit=1):
     '''
     df_1 is the left table to join
     df_2 is the right table to join
@@ -57,15 +67,6 @@ def fuzzy_merge(df_1, df_2, key1, key2, threshold=80, limit=1):
     df_1['matches'] = m2
 
     return df_1
-
-def check_fuzzy_proposals(k, ws):
-    print(k.shape, ws.shape)
-    k_name = k[["name"]]
-    ws_name = ws[["name"]]
-    k_name = k_name.append(ws_name)
-    res = k_name.drop_duplicates(keep=False)
-    res2 = fuzzy_merge(ws,k, "name", "name")
-    print(res2[["name", "matches"]].merge(res, how="inner", on=['name', 'name']))
 
 def ws_read_json(season):
     data = []

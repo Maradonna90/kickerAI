@@ -23,8 +23,10 @@ class bidict(dict):
             json.dump(self, fp, sort_keys=True, indent=4)
     def load(self, filename):
         with open(filename+'.json', 'r') as fp:
-            self.clear()
-            self.update(json.load(fp))
-            self.inverse.clear()
-            for key, value in self.items():
-                self.inverse.setdefault(value,[]).append(key)
+            data = json.load(fp)
+            if data:
+                self.clear()
+                self.update(data)
+                self.inverse.clear()
+                for key, value in self.items():
+                    self.inverse.setdefault(value,[]).append(key)
