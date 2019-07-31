@@ -6,8 +6,11 @@ from fuzzywuzzy import process
 from bidict import bidict
 import pickle
 def main():
-    #seasons = [9,10,11]
     seasons = [9,10,11,12,13,14,15,16,17,18]
+
+
+
+def init_data(seasons):
     data = {}
     r = Reader()
     clubs = []
@@ -34,7 +37,7 @@ def main():
         s_dat.loc[:,"club"] = s_dat.loc[:,"club"].map(clubs)
         s_dat.loc[:,"name"] = s_dat.loc[:,"name"].map(names)
         s_dat.to_pickle("db/"+str(k)+".pkl")
-    
+
 def ws_refresh_database(db_name, data):
     db = bidict({})
     db.load("db/"+db_name)
