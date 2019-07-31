@@ -15,6 +15,7 @@ def main():
         k_data_x[season], k_data_y[season] = r.read("new_data/"+str(season).zfill(2)+".csv")
         k_data_x[season] = pd.DataFrame.from_dict(k_data_x[season])
         k_data_y[season] = pd.DataFrame.from_records({"pts": k_data_y[season]}, columns=["pts"])
+        check_fuzzy_proposals(k_data_x[season], data[season])
         new_data = ws_merge_kicker(k_data_x[season], data[season])
         print(new_data.shape)
         print(new_data)
@@ -28,7 +29,7 @@ def ws_merge_kicker(k, ws):
     pass
     #TODO: apply merge. WS always has priority!
 
-def fuzzy_merge(df_1, df_2, key1, key2, threshold=90, limit=1):
+def fuzzy_merge(df_1, df_2, key1, key2, threshold=80, limit=1):
     '''
     df_1 is the left table to join
     df_2 is the right table to join
