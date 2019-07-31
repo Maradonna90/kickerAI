@@ -4,6 +4,7 @@ from reader import Reader
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 from bidict import bidict
+import pickle
 def main():
     #seasons = [9,10,11]
     seasons = [9,10,11,12,13,14,15,16,17,18]
@@ -22,11 +23,18 @@ def main():
         k_data_x[season]["pts"] = k_data_y[season]
         k_data[season] = k_data_x[season]
         data[season] = ws_merge_kicker(k_data[season], data[season])
-        clubs.extend(data[season]['club'].drop_duplicates().values.tolist())
-        names.extend(data[season]['name'].drop_duplicates().values.tolist())
-    ws_refresh_database("clubs", clubs)
-    ws_refresh_database("names", names)
+        #clubs.extend(data[season]['club'].drop_duplicates().values.tolist())
+        #names.extend(data[season]['name'].drop_duplicates().values.tolist())
+    #ws_refresh_database("clubs", clubs)
+    #ws_refresh_database("names", names)
+    clubs = ws_load_database("clubs")
+    names = ws_load_database("names")
 
+    for k, s_dat in data.items():
+        s_dat.loc[:,"club"] = s_dat.loc[:,"club"].map(clubs)
+        s_dat.loc[:,"name"] = s_dat.loc[:,"name"].map(names)
+        s_dat.to_pickle("db/"+str(k)+".pkl")
+    
 def ws_refresh_database(db_name, data):
     db = bidict({})
     db.load("db/"+db_name)
@@ -34,6 +42,11 @@ def ws_refresh_database(db_name, data):
         if dat not in db.keys():
             db[dat] = len(db.values())
     db.save("db/"+db_name)
+
+def ws_load_database(db_name):
+    db = bidict({})
+    db.load("db/"+db_name)
+    return db
 
 def ws_merge_kicker(k, ws):
     k = k.drop_duplicates(subset=['name'], keep='first')
