@@ -6,20 +6,11 @@
 	* train_avg_score = -1727.11
 	* test_avg_score = 1695.77
 
-# How to improve performance
-* more features via feature engineering?
-	* what features though?
-* one specific regressor for each position
-
-
 # Conclusions
 * Regressor per position
 * more individual stats
 	* whoscored.com
 	* https://www.whoscored.com/StatisticsFeed/1/GetPlayerStatistics?category=summary&subcategory=all&statsAccumulationType=0&isCurrent=true&stageId=15243&tournamentOptions=3&sortBy=Rating&field=Overall&isMinApp=false&page=1&numberOfPlayersToPick=1000
-		* subcategory: passing, offensive, defensive, summary
-		* alle season so holen, dann zippen und parsen und mergen mit den punkten
-		* DBs aufbuauen für Name -> NameId, club -> clubId (bidirectionale dicts?)
 		* maybe some sort of feature engineering so player stats of previous seasons is used for upcoming season (e.g x[18], contains data of 09-17 not 18)
 			* use exponentiall weighted moving average for all previous seasons as input, for all stats, including points
 	* understat.com

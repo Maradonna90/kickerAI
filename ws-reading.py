@@ -7,8 +7,22 @@ from bidict import bidict
 import pickle
 def main():
     seasons = [9,10,11,12,13,14,15,16,17,18]
-
-
+    df = pd.DataFrame({})
+    for season in seasons:
+         d = pd.read_pickle("db/"+str(season).zfill(2)+".pkl")
+         d = d.drop(columns=["firstName", "lastName"])
+         d.loc[:,"season"] = season
+         df = df.append(d)
+    df = df.sort_values(["season", "name"])
+    pos = bidict({"Tor": 0, "Abwehr" : 1, "Mittelfeld" : 2, "Sturm" : 3})
+    df.loc[:,"position"] = df.loc[:,"position"].map(pos)
+    print(df.head().to_string())
+    
+    #TODO: calc exponential weighted average for all seasons before and all columns -> create new dataframe
+    #TODO: define MSE as metric
+    #TODO: train a model (LGBM)
+    #TODO: use some sort of k-fold / timeseries split
+    #TODO: make 19 data available (use init_data function and have a case for pred data
 
 def init_data(seasons):
     data = {}
