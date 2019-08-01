@@ -16,16 +16,18 @@ def main():
     df = df.sort_values(["season", "name"])
     pos = bidict({"Tor": 0, "Abwehr" : 1, "Mittelfeld" : 2, "Sturm" : 3})
     df.loc[:,"position"] = df.loc[:,"position"].map(pos)
-    #print(df.head().to_string())
-    rob = df[df.name.isin([0])].copy()
-    rob = rob.sort_values(["season"], ascending=False)
-    rob['ewma_pts'] = rob['pts']
-    ewma_cols = ["apps", "subOn", "manOfTheMatch", "goal", "assistTotal", "shotsPerGame", "aerialWonPerGame", "rating", "minsPlayed", "yellowCard", "redCard", "passSuccess", "ranking", "tacklePerGame", "interceptionPerGame", "foulsPerGame", "offsideWonPerGame", "clearancePerGame", "wasDribbledPerGame", "outfielderBlockPerGame", "goalOwn", "keyPassPerGame", "dribbleWonPerGame", "foulGivenPerGame", "offsideGivenPerGame", "dispossessedPerGame", "turnoverPerGame", "totalPassesPerGame", "accurateCrossesPerGame", "accurateLongPassPerGame", "accurateThroughBallPerGame", "ewma_pts"]
-    rob.loc[:,ewma_cols] = rob.loc[:,ewma_cols].ewm(com=.5).mean()
-    rob.loc[:,ewma_cols] = rob.loc[:,ewma_cols].shift(periods=-1)
-    #rob.ewm(com=.5).mean()
-    print(rob.to_string())
-    #rob.shift(periods=-1)
+    print(df.shape)
+    name_ids = df['name'].drop_duplicates().values.tolist()
+    feat_eng_df = pd.DataFrame({})
+    for n in name_ids:
+        rob = df[df.name.isin([n])].copy()
+        rob = rob.sort_values(["season"], ascending=False)
+        rob['ewma_pts'] = rob['pts']
+        ewma_cols = ["apps", "subOn", "manOfTheMatch", "goal", "assistTotal", "shotsPerGame", "aerialWonPerGame", "rating", "minsPlayed", "yellowCard", "redCard", "passSuccess", "ranking", "tacklePerGame", "interceptionPerGame", "foulsPerGame", "offsideWonPerGame", "clearancePerGame", "wasDribbledPerGame", "outfielderBlockPerGame", "goalOwn", "keyPassPerGame", "dribbleWonPerGame", "foulGivenPerGame", "offsideGivenPerGame", "dispossessedPerGame", "turnoverPerGame", "totalPassesPerGame", "accurateCrossesPerGame", "accurateLongPassPerGame", "accurateThroughBallPerGame", "ewma_pts"]
+        rob.loc[:,ewma_cols] = rob.loc[:,ewma_cols].ewm(com=.5).mean()
+        rob.loc[:,ewma_cols] = rob.loc[:,ewma_cols].shift(periods=-1)
+        feat_eng_df = feat_eng_df.append(rob)
+    print(feat_eng_df.shape)
     #TODO: calc exponential weighted average for all seasons before and all columns -> create new dataframe
     #TODO: define MSE as metric
     #TODO: train a model (LGBM)
