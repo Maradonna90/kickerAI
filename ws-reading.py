@@ -1,9 +1,12 @@
 import json
+import numpy as np
 import pandas as pd
 from reader import Reader
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 from bidict import bidict
+from sklearn.metrics import mean_squared_error
+import lightgbm as lgb
 import pickle
 def main():
     seasons = [9,10,11,12,13,14,15,16,17,18]
@@ -17,6 +20,7 @@ def main():
     pos = bidict({"Tor": 0, "Abwehr" : 1, "Mittelfeld" : 2, "Sturm" : 3})
     df.loc[:,"position"] = df.loc[:,"position"].map(pos)
     print(df.shape)
+    df = df.astype({"age" : "int64"})
     name_ids = df['name'].drop_duplicates().values.tolist()
     feat_eng_df = pd.DataFrame({})
     for n in name_ids:
@@ -28,11 +32,33 @@ def main():
         rob.loc[:,ewma_cols] = rob.loc[:,ewma_cols].shift(periods=-1)
         feat_eng_df = feat_eng_df.append(rob)
     print(feat_eng_df.shape)
-    #TODO: calc exponential weighted average for all seasons before and all columns -> create new dataframe
-    #TODO: define MSE as metric
+    lgbm = lgb.LGBMRegressor(n_estimators=1000, learning_rate=0.01)
+    run_model2(lgbm, feat_eng_df, seasons)
+
     #TODO: train a model (LGBM)
     #TODO: use some sort of k-fold / timeseries split
     #TODO: make 19 data available (use init_data function and have a case for pred data
+
+def run_model2(model, data, seasons):
+    mean_error = []
+    for season in seasons[1:]:
+        train = data[data['season'] < season]
+        val = data[data['season'] == season]
+        
+        xtr, xts = train.drop(['pts'], axis=1), val.drop(['pts'], axis=1)
+        ytr, yts = train['pts'].values, val['pts'].values
+        
+        #mdl = LGBMRegressor(n_estimators=1000, learning_rate=0.01)
+        model.fit(xtr, ytr)
+        
+        #p = np.expm1(mdl.predict(xts))
+        
+        error = mean_squared_error(yts, model.predict(xts))
+        print('Week %d - Error %.5f' % (season, error))
+        mean_error.append(error)
+    print('Mean Error = %.5f' % np.mean(mean_error))
+
+
 
 def init_data(seasons):
     data = {}
