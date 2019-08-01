@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 def main():
     r = Reader()
-    data, pred = r.read("pred/BayesianRidge-pred.csv", prediction=True)
+    data, pred = r.read("lgbm-ws-pred2.csv", prediction=True)
     #print(data, pred)
     acc_per_pos(data, pred)
     acc_per_pts(data, pred)

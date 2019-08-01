@@ -1,3 +1,4 @@
+import csv
 import json
 import numpy as np
 import pandas as pd
@@ -5,9 +6,13 @@ from reader import Reader
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process
 from bidict import bidict
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, make_scorer
 import lightgbm as lgb
 import pickle
+from sklearn.linear_model import Lasso, HuberRegressor
+from skopt.space import Real, Integer, Categorical
+from skopt import gp_minimize
+from skopt.utils import use_named_args
 def main():
     seasons = [9,10,11,12,13,14,15,16,17,18]
     df = pd.DataFrame({})
@@ -33,14 +38,16 @@ def main():
         feat_eng_df = feat_eng_df.append(rob)
     print(feat_eng_df.shape)
     lgbm = lgb.LGBMRegressor(n_estimators=1000, learning_rate=0.01)
-    run_model2(lgbm, feat_eng_df, seasons)
-
-    #TODO: train a model (LGBM)
-    #TODO: use some sort of k-fold / timeseries split
+    #[0.014746003657271805, 29, 66, 179, 0.42233695027257256, 0.7756175270966108, 'dart']
+    #run_model2("lgbm", lgbm, feat_eng_df, seasons, pos)
+    hyper_tune("lgbm", lgbm, feat_eng_df, seasons)
     #TODO: make 19 data available (use init_data function and have a case for pred data
-
-def run_model2(model, data, seasons):
+def run_model2(name, model, data, seasons, posis):
+    print("train and predict "+name)
     mean_error = []
+    pred = None
+    dat = None
+    real = None
     for season in seasons[1:]:
         train = data[data['season'] < season]
         val = data[data['season'] == season]
@@ -52,11 +59,46 @@ def run_model2(model, data, seasons):
         model.fit(xtr, ytr)
         
         #p = np.expm1(mdl.predict(xts))
-        
-        error = mean_squared_error(yts, model.predict(xts))
-        print('Week %d - Error %.5f' % (season, error))
+        pred = model.predict(xts)
+        dat = xts
+        real = yts
+        error = mean_squared_error(yts, pred)
+        print('Season %d - Error %.5f' % (season, error))
         mean_error.append(error)
     print('Mean Error = %.5f' % np.mean(mean_error))
+    return np.mean(mean_error)
+    res = []
+    clubs = ws_load_database("clubs")
+    names = ws_load_database("names")
+    dat = pd.DataFrame(dat)
+    for player, test, prediction in zip(dat.iterrows(), real, pred):
+        player = player[1]
+        res.append([names.inverse[int(player['name'])][0], int(player['age']), clubs.inverse[int(player['club'])][0], posis.inverse[int(player['position'])][0], int(test), prediction])
+    write(name+"-ws-pred", res)
+
+def hyper_tune(name, model, data, seasons):
+    space = [Real(0.01, 0.5, name='learning_rate', prior='log-uniform'),
+            Integer(1, 30, name='max_depth'),
+            Integer(2, 100, name='num_leaves'),
+            Integer(10, 1000, name='min_data_in_leaf'),
+            Real(0.1, 1.0, name='feature_fraction', prior='uniform'),
+            Real(0.1, 1.0, name='subsample', prior='uniform'),
+            Categorical(['gbdt','dart','goss'], name='boosting_type'),
+         ]
+
+    @use_named_args(space)
+    def objective(**params):
+        model.set_params(**params)
+        scorer = make_scorer(mean_squared_error, greater_is_better=False)
+        return run_model2(name, model, data, seasons, None)
+    res_gp = gp_minimize(objective, space, n_calls=200, random_state=0)
+    print("Best Score:", res_gp.fun)
+    print("Parameter Vals:", res_gp.x)
+def write(filename, res):
+    with open(filename+'.csv', 'w', newline='\n') as csvfile:
+        writer = csv.writer(csvfile)
+        for data in res:
+            writer.writerow(data)
 
 
 
