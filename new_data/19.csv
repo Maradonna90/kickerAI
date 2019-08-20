@@ -1,14 +1,16 @@
 Fabian Giefer,Tor,29,FC Augsburg
+Tomas Koubek,Tor,26,FC Augsburg
 Benjamin Leneis,Tor,20,FC Augsburg
 Andreas Luthe,Tor,32,FC Augsburg
 Simon Asta,Abwehr,18,FC Augsburg
-Kevin Danso,Abwehr,20,FC Augsburg
 Raphael Framberger,Abwehr,23,FC Augsburg
 Felix Götze,Abwehr,21,FC Augsburg
 Jeffrey Gouweleeuw,Abwehr,28,FC Augsburg
-Martin Hinteregger,Abwehr,26,FC Augsburg
 Iago,Abwehr,22,FC Augsburg
+Tin Jedvaj,Abwehr,23,FC Augsburg
+Stephan Lichtsteiner,Abwehr,35,FC Augsburg
 Philipp Max,Abwehr,25,FC Augsburg
+Reece Oxford,Abwehr,20,FC Augsburg
 Mads Pedersen,Abwehr,22,FC Augsburg
 Tim Rieder,Abwehr,25,FC Augsburg
 Jozo Stanic,Abwehr,20,FC Augsburg
@@ -21,7 +23,7 @@ André Hahn,Mittelfeld,28,FC Augsburg
 Fredrik Jensen,Mittelfeld,21,FC Augsburg
 Rani Khedira,Mittelfeld,25,FC Augsburg
 Jan Moravek,Mittelfeld,29,FC Augsburg
-Noah Joel Sarenren Bazee,Mittelfeld,22,FC Augsburg
+Joel Noah Bazee Sarenren,Mittelfeld,22,FC Augsburg
 Georg Teigl,Mittelfeld,28,FC Augsburg
 Ruben Vargas,Mittelfeld,20,FC Augsburg
 Seong-Hoon Cheon,Sturm,18,FC Augsburg
@@ -34,7 +36,6 @@ Julian Schieber,Sturm,30,FC Augsburg
 Jakob Busk,Tor,25,1. FC Union Berlin
 Rafal Gikiewicz,Tor,31,1. FC Union Berlin
 Moritz Nicolas,Tor,21,1. FC Union Berlin
-Lars Dietz,Abwehr,22,1. FC Union Berlin
 Marvin Friedrich,Abwehr,23,1. FC Union Berlin
 Florian Hübner,Abwehr,28,1. FC Union Berlin
 Christopher Lenz,Abwehr,24,1. FC Union Berlin
@@ -51,7 +52,6 @@ Laurenz Dehl,Mittelfeld,17,1. FC Union Berlin
 Florian Flecker,Mittelfeld,23,1. FC Union Berlin
 Christian Gentner,Mittelfeld,33,1. FC Union Berlin
 Akaki Gogia,Mittelfeld,27,1. FC Union Berlin
-Marcel Hartel,Mittelfeld,23,1. FC Union Berlin
 Julius Kade,Mittelfeld,20,1. FC Union Berlin
 Cihan Kahraman,Mittelfeld,20,1. FC Union Berlin
 Felix Kroos,Mittelfeld,28,1. FC Union Berlin
@@ -96,6 +96,7 @@ Ciljan Per Skjelbred,Mittelfeld,32,Hertha BSC
 Vedad Ibisevic,Sturm,34,Hertha BSC
 Muhammed Kiprit,Sturm,20,Hertha BSC
 Pascal Köpke,Sturm,23,Hertha BSC
+Dodi Lukebakio,Sturm,21,Hertha BSC
 Daishawn Redan,Sturm,18,Hertha BSC
 Davie Selke,Sturm,24,Hertha BSC
 Stefanos Kapino,Tor,25,Werder Bremen
@@ -103,11 +104,11 @@ Jiri Pavlenka,Tor,27,Werder Bremen
 Luca Plogmann,Tor,19,Werder Bremen
 Ludwig Augustinsson,Abwehr,25,Werder Bremen
 Robert Bauer,Abwehr,24,Werder Bremen
-Felix Beijmo,Abwehr,21,Werder Bremen
 Marco Friedl,Abwehr,21,Werder Bremen
-Theodor Gebre Selassie,Abwehr,32,Werder Bremen
+Theodor Selassie Gebre,Abwehr,32,Werder Bremen
 Sebastian Langkamp,Abwehr,31,Werder Bremen
 Niklas Moisander,Abwehr,33,Werder Bremen
+Ömer Toprak,Abwehr,30,Werder Bremen
 Milos Veljkovic,Abwehr,23,Werder Bremen
 Philipp Bargfrede,Mittelfeld,30,Werder Bremen
 Maximilian Eggestein,Mittelfeld,22,Werder Bremen
@@ -138,49 +139,44 @@ Mateu Morey,Abwehr,19,Borussia Dortmund
 Lukasz Piszczek,Abwehr,34,Borussia Dortmund
 Marcel Schmelzer,Abwehr,31,Borussia Dortmund
 Nico Schulz,Abwehr,26,Borussia Dortmund
-Ömer Toprak,Abwehr,30,Borussia Dortmund
 Dan-Axel Zagadou,Abwehr,20,Borussia Dortmund
 Julian Brandt,Mittelfeld,23,Borussia Dortmund
-Jacob Bruun Larsen,Mittelfeld,20,Borussia Dortmund
+Jacob Larsen Bruun,Mittelfeld,20,Borussia Dortmund
 Mahmoud Dahoud,Mittelfeld,23,Borussia Dortmund
 Thomas Delaney,Mittelfeld,27,Borussia Dortmund
-Sergio Gomez,Mittelfeld,18,Borussia Dortmund
 Raphael Guerreiro,Mittelfeld,25,Borussia Dortmund
 Thorgan Hazard,Mittelfeld,26,Borussia Dortmund
-Shinji Kagawa,Mittelfeld,30,Borussia Dortmund
-Patrick Osterhage,Mittelfeld,19,Borussia Dortmund
-Maximilian Philipp,Mittelfeld,25,Borussia Dortmund
 Tobias Raschl,Mittelfeld,19,Borussia Dortmund
 Marco Reus,Mittelfeld,30,Borussia Dortmund
-Sebastian Rode,Mittelfeld,28,Borussia Dortmund
 Jadon Sancho,Mittelfeld,19,Borussia Dortmund
-André Schürrle,Mittelfeld,28,Borussia Dortmund
 Julian Weigl,Mittelfeld,23,Borussia Dortmund
 Axel Witsel,Mittelfeld,30,Borussia Dortmund
 Marius Wolf,Mittelfeld,24,Borussia Dortmund
 Mario Götze,Sturm,27,Borussia Dortmund
-Paco Alcacer,Sturm,25,Borussia Dortmund
+Alcacer Paco,Sturm,25,Borussia Dortmund
 Florian Kastenmeier,Tor,22,Fortuna Düsseldorf
 Michael Rensing,Tor,35,Fortuna Düsseldorf
 Zackary Steffen,Tor,24,Fortuna Düsseldorf
 Jannick Theißen,Tor,21,Fortuna Düsseldorf
 Tim Wiesner,Tor,22,Fortuna Düsseldorf
 Raphael Wolf,Tor,31,Fortuna Düsseldorf
+Kasim Adams,Abwehr,24,Fortuna Düsseldorf
 Kaan Ayhan,Abwehr,24,Fortuna Düsseldorf
 Robin Bormuth,Abwehr,23,Fortuna Düsseldorf
 Diego Contento,Abwehr,29,Fortuna Düsseldorf
 Niko Gießelmann,Abwehr,27,Fortuna Düsseldorf
 Andre Hoffmann,Abwehr,26,Fortuna Düsseldorf
+Markus Suttner,Abwehr,32,Fortuna Düsseldorf
 Jean Zimmer,Abwehr,25,Fortuna Düsseldorf
 Matthias Zimmermann,Abwehr,27,Fortuna Düsseldorf
 Nana Ampomah,Mittelfeld,23,Fortuna Düsseldorf
+Lewis Baker,Mittelfeld,24,Fortuna Düsseldorf
 Aymen Barkok,Mittelfeld,21,Fortuna Düsseldorf
 Adam Bodzek,Mittelfeld,33,Fortuna Düsseldorf
 Johannes Bühler,Mittelfeld,22,Fortuna Düsseldorf
 Oliver Fink,Mittelfeld,37,Fortuna Düsseldorf
 Davor Lovren,Mittelfeld,20,Fortuna Düsseldorf
 Alfredo Morales,Mittelfeld,29,Fortuna Düsseldorf
-Havard Nielsen,Mittelfeld,26,Fortuna Düsseldorf
 Thomas Pledl,Mittelfeld,25,Fortuna Düsseldorf
 Marcel Sobottka,Mittelfeld,25,Fortuna Düsseldorf
 Kevin Stöger,Mittelfeld,25,Fortuna Düsseldorf
@@ -189,8 +185,9 @@ Erik Thommy,Mittelfeld,24,Fortuna Düsseldorf
 Rouwen Hennings,Sturm,31,Fortuna Düsseldorf
 Kenan Karaman,Sturm,25,Fortuna Düsseldorf
 Dawid Kownacki,Sturm,22,Fortuna Düsseldorf
-Emir Kujovic,Sturm,31,Fortuna Düsseldorf
+Kelvin Ofori,Sturm,18,Fortuna Düsseldorf
 Frederik Rönnow,Tor,26,Eintracht Frankfurt
+Kevin Trapp,Tor,29,Eintracht Frankfurt
 Felix Wiedwald,Tor,29,Eintracht Frankfurt
 Jan Zimmermann,Tor,34,Eintracht Frankfurt
 David Abraham,Abwehr,33,Eintracht Frankfurt
@@ -199,15 +196,14 @@ Danny Costa da,Abwehr,26,Eintracht Frankfurt
 Erik Durm,Abwehr,27,Eintracht Frankfurt
 Simon Falette,Abwehr,27,Eintracht Frankfurt
 Makoto Hasebe,Abwehr,35,Eintracht Frankfurt
+Martin Hinteregger,Abwehr,26,Eintracht Frankfurt
 Evan Ndicka,Abwehr,19,Eintracht Frankfurt
 Marco Russ,Abwehr,33,Eintracht Frankfurt
 Taleb Tawatha,Abwehr,27,Eintracht Frankfurt
 Almamy Toure,Abwehr,23,Eintracht Frankfurt
-Tuta,Abwehr,20,Eintracht Frankfurt
-Jetro Willems,Abwehr,25,Eintracht Frankfurt
 Marijan Cavar,Mittelfeld,21,Eintracht Frankfurt
 Sahverdi Cetin,Mittelfeld,18,Eintracht Frankfurt
-Jonathan de Guzman,Mittelfeld,31,Eintracht Frankfurt
+Jonathan Guzman de,Mittelfeld,31,Eintracht Frankfurt
 Gelson Fernandes,Mittelfeld,32,Eintracht Frankfurt
 Patrick Finger,Mittelfeld,18,Eintracht Frankfurt
 Mijat Gacinovic,Mittelfeld,24,Eintracht Frankfurt
@@ -215,6 +211,7 @@ Daichi Kamada,Mittelfeld,22,Eintracht Frankfurt
 Dominik Kohr,Mittelfeld,25,Eintracht Frankfurt
 Filip Kostic,Mittelfeld,26,Eintracht Frankfurt
 Nicolai Müller,Mittelfeld,31,Eintracht Frankfurt
+Sebastian Rode,Mittelfeld,28,Eintracht Frankfurt
 Djibril Sow,Mittelfeld,22,Eintracht Frankfurt
 Marc Stendera,Mittelfeld,23,Eintracht Frankfurt
 Nils Stendera,Mittelfeld,18,Eintracht Frankfurt
@@ -255,17 +252,14 @@ Luca Waldschmidt,Sturm,23,SC Freiburg
 Oliver Baumann,Tor,29,TSG Hoffenheim
 Philipp Pentke,Tor,34,TSG Hoffenheim
 Alexander Stolz,Tor,35,TSG Hoffenheim
-Kasim Adams,Abwehr,24,TSG Hoffenheim
 Kevin Akpoguma,Abwehr,24,TSG Hoffenheim
 Ermin Bicakcic,Abwehr,29,TSG Hoffenheim
-Justin Hoogma,Abwehr,21,TSG Hoffenheim
 Benjamin Hübner,Abwehr,30,TSG Hoffenheim
 Ribeiro Lucas,Abwehr,20,TSG Hoffenheim
 Havard Nordtveit,Abwehr,29,TSG Hoffenheim
 Stefan Posch,Abwehr,22,TSG Hoffenheim
 Konstantinos Stafylidis,Abwehr,25,TSG Hoffenheim
 Kevin Vogt,Abwehr,27,TSG Hoffenheim
-Nadiem Amiri,Mittelfeld,22,TSG Hoffenheim
 Christoph Baumgartner,Mittelfeld,20,TSG Hoffenheim
 Leonardo Bittencourt,Mittelfeld,25,TSG Hoffenheim
 Joshua Brenet,Mittelfeld,25,TSG Hoffenheim
@@ -274,29 +268,31 @@ Vincenzo Grifo,Mittelfeld,26,TSG Hoffenheim
 Florian Grillitsch,Mittelfeld,23,TSG Hoffenheim
 Pavel Kaderabek,Mittelfeld,27,TSG Hoffenheim
 Philipp Ochs,Mittelfeld,22,TSG Hoffenheim
+Sebastian Rudy,Mittelfeld,29,TSG Hoffenheim
 Lukas Rupp,Mittelfeld,28,TSG Hoffenheim
+Diadie Samassekou,Mittelfeld,23,TSG Hoffenheim
 Steven Zuber,Mittelfeld,27,TSG Hoffenheim
 Robert Zulj,Mittelfeld,27,TSG Hoffenheim
 Sargis Adamyan,Sturm,26,TSG Hoffenheim
 Ihlas Bebou,Sturm,25,TSG Hoffenheim
 Ishak Belfodil,Sturm,27,TSG Hoffenheim
 Andrej Kramaric,Sturm,28,TSG Hoffenheim
+Robert Skov,Sturm,23,TSG Hoffenheim
 Adam Szalai,Sturm,31,TSG Hoffenheim
 Timo Horn,Tor,26,1. FC Köln
 Thomas Kessler,Tor,33,1. FC Köln
 Julian Krahl,Tor,19,1. FC Köln
 Brady Scott,Tor,20,1. FC Köln
 Matthias Bader,Abwehr,22,1. FC Köln
+Sebastiaan Bornauw,Abwehr,20,1. FC Köln
 Rafael Czichos,Abwehr,29,1. FC Köln
 Kingsley Ehizibue,Abwehr,24,1. FC Köln
 Jonas Hector,Abwehr,29,1. FC Köln
-Jannes Horn,Abwehr,22,1. FC Köln
 Ismail Jakobs,Abwehr,19,1. FC Köln
 Meré Jorge,Abwehr,22,1. FC Köln
 Noah Katterbach,Abwehr,18,1. FC Köln
 Benno Schmitz,Abwehr,24,1. FC Köln
 Lasse Sobiech,Abwehr,28,1. FC Köln
-Frederik Sörensen,Abwehr,27,1. FC Köln
 Darko Churlinov,Mittelfeld,19,1. FC Köln
 Christian Clemens,Mittelfeld,27,1. FC Köln
 Dominick Drexler,Mittelfeld,29,1. FC Köln
@@ -308,18 +304,20 @@ Salih Özcan,Mittelfeld,21,1. FC Köln
 Marcel Risse,Mittelfeld,29,1. FC Köln
 Louis Schaub,Mittelfeld,24,1. FC Köln
 Kingsley Schindler,Mittelfeld,26,1. FC Köln
+Ellyes Skhiri,Mittelfeld,24,1. FC Köln
 Birger Verstraete,Mittelfeld,25,1. FC Köln
 Jhon Cordoba,Sturm,26,1. FC Köln
 Anthony Modeste,Sturm,31,1. FC Köln
 Simon Terodde,Sturm,31,1. FC Köln
 Peter Gulacsi,Tor,29,RB Leipzig
 Yvon Mvogo,Tor,25,RB Leipzig
+Philipp Tschauner,Tor,33,RB Leipzig
 Ethan Ampadu,Abwehr,18,RB Leipzig
 Marcel Halstenberg,Abwehr,27,RB Leipzig
 Lukas Klostermann,Abwehr,23,RB Leipzig
 Ibrahima Konaté,Abwehr,20,RB Leipzig
 Konrad Laimer,Abwehr,22,RB Leipzig
-Luan Candido,Abwehr,18,RB Leipzig
+Candido Luan,Abwehr,18,RB Leipzig
 Nordi Mukiele,Abwehr,21,RB Leipzig
 Willi Orban,Abwehr,26,RB Leipzig
 Marcelo Saracchi,Abwehr,21,RB Leipzig
@@ -335,7 +333,8 @@ Christopher Nkunku,Mittelfeld,21,RB Leipzig
 Marcel Sabitzer,Mittelfeld,25,RB Leipzig
 Hannes Wolf,Mittelfeld,20,RB Leipzig
 Jean-Kevin Augustin,Sturm,22,RB Leipzig
-Matheus Cunha,Sturm,20,RB Leipzig
+Ademola Lookman,Sturm,21,RB Leipzig
+Cunha Matheus,Sturm,20,RB Leipzig
 Yussuf Poulsen,Sturm,25,RB Leipzig
 Timo Werner,Sturm,23,RB Leipzig
 Lukas Hradecky,Tor,29,Bayer 04 Leverkusen
@@ -343,14 +342,13 @@ Niklas Lomb,Tor,26,Bayer 04 Leverkusen
 Ramazan Özcan,Tor,35,Bayer 04 Leverkusen
 Lars Bender,Abwehr,30,Bayer 04 Leverkusen
 Sven Bender,Abwehr,30,Bayer 04 Leverkusen
-Jan Boller,Abwehr,19,Bayer 04 Leverkusen
 Aleksandar Dragovic,Abwehr,28,Bayer 04 Leverkusen
-Tin Jedvaj,Abwehr,23,Bayer 04 Leverkusen
 Panagiotis Retsos,Abwehr,20,Bayer 04 Leverkusen
 Daley Sinkgraven,Abwehr,24,Bayer 04 Leverkusen
 Jonathan Tah,Abwehr,23,Bayer 04 Leverkusen
 Mitchell Weiser,Abwehr,25,Bayer 04 Leverkusen
 Wendell,Abwehr,26,Bayer 04 Leverkusen
+Nadiem Amiri,Mittelfeld,22,Bayer 04 Leverkusen
 Charles Aranguiz,Mittelfeld,30,Bayer 04 Leverkusen
 Julian Baumgartlinger,Mittelfeld,31,Bayer 04 Leverkusen
 Kerem Demirbay,Mittelfeld,26,Bayer 04 Leverkusen
@@ -375,18 +373,18 @@ Alexander Hack,Abwehr,25,1. FSV Mainz 05
 Jonathan Meier,Abwehr,19,1. FSV Mainz 05
 Moussa Niakhaté,Abwehr,23,1. FSV Mainz 05
 Ronael Pierre-Gabriel,Abwehr,21,1. FSV Mainz 05
+Jeremiah Juste St,Abwehr,22,1. FSV Mainz 05
 Ridle Baku,Mittelfeld,21,1. FSV Mainz 05
 Leandro Barreiro,Mittelfeld,19,1. FSV Mainz 05
 Jean-Paul Boetius,Mittelfeld,25,1. FSV Mainz 05
 Edimilson Fernandes,Mittelfeld,23,1. FSV Mainz 05
-Jean-Philippe Gbamin,Mittelfeld,23,1. FSV Mainz 05
-José Rodriguez,Mittelfeld,24,1. FSV Mainz 05
 Kunde,Mittelfeld,24,1. FSV Mainz 05
 Danny Latza,Mittelfeld,29,1. FSV Mainz 05
 Alexandru Maxim,Mittelfeld,29,1. FSV Mainz 05
 Phillipp Mwene,Mittelfeld,25,1. FSV Mainz 05
 Levin Öztunali,Mittelfeld,23,1. FSV Mainz 05
 Cyrill Akono,Sturm,19,1. FSV Mainz 05
+Taiwo Awoniyi,Sturm,21,1. FSV Mainz 05
 Jonathan Burkardt,Sturm,19,1. FSV Mainz 05
 Dong-Won Ji,Sturm,28,1. FSV Mainz 05
 Jean-Philippe Mateta,Sturm,22,1. FSV Mainz 05
@@ -396,6 +394,7 @@ Aaron Seydel,Sturm,23,1. FSV Mainz 05
 Max Grün,Tor,32,Bor. Mönchengladbach
 Tobias Sippel,Tor,31,Bor. Mönchengladbach
 Yann Sommer,Tor,30,Bor. Mönchengladbach
+Ramy Bensebaini,Abwehr,24,Bor. Mönchengladbach
 Jordan Louis Beyer,Abwehr,19,Bor. Mönchengladbach
 Mamadou Doucouré,Abwehr,21,Bor. Mönchengladbach
 Nico Elvedi,Abwehr,22,Bor. Mönchengladbach
@@ -406,7 +405,6 @@ Michael Lang,Abwehr,28,Bor. Mönchengladbach
 Andreas Poulsen,Abwehr,19,Bor. Mönchengladbach
 Oscar Wendt,Abwehr,33,Bor. Mönchengladbach
 Laszlo Benes,Mittelfeld,21,Bor. Mönchengladbach
-Michael Cuisance,Mittelfeld,19,Bor. Mönchengladbach
 Jonas Hofmann,Mittelfeld,27,Bor. Mönchengladbach
 Fabian Johnson,Mittelfeld,31,Bor. Mönchengladbach
 Christoph Kramer,Mittelfeld,28,Bor. Mönchengladbach
@@ -420,6 +418,7 @@ Breel Embolo,Sturm,22,Bor. Mönchengladbach
 Patrick Herrmann,Sturm,28,Bor. Mönchengladbach
 Alassane Plea,Sturm,26,Bor. Mönchengladbach
 Raffael,Sturm,34,Bor. Mönchengladbach
+Marcus Thuram,Sturm,21,Bor. Mönchengladbach
 Ibrahima Traoré,Sturm,31,Bor. Mönchengladbach
 Julio Villalba,Sturm,20,Bor. Mönchengladbach
 Christian Früchtl,Tor,19,Bayern München
@@ -433,12 +432,15 @@ Joshua Kimmich,Abwehr,24,Bayern München
 Benjamin Pavard,Abwehr,23,Bayern München
 Niklas Süle,Abwehr,23,Bayern München
 Kingsley Coman,Mittelfeld,23,Bayern München
+Philippe Coutinho,Mittelfeld,27,Bayern München
+Michael Cuisance,Mittelfeld,19,Bayern München
 Alphonso Davies,Mittelfeld,18,Bayern München
 Serge Gnabry,Mittelfeld,24,Bayern München
 Leon Goretzka,Mittelfeld,24,Bayern München
-Javi Martinez,Mittelfeld,30,Bayern München
+Martinez Javi,Mittelfeld,30,Bayern München
 Thomas Müller,Mittelfeld,29,Bayern München
-Renato Sanches,Mittelfeld,21,Bayern München
+Ivan Perisic,Mittelfeld,30,Bayern München
+Sanches Renato,Mittelfeld,21,Bayern München
 Thiago,Mittelfeld,28,Bayern München
 Corentin Tolisso,Mittelfeld,24,Bayern München
 Fiete Arp,Sturm,19,Bayern München
@@ -493,14 +495,14 @@ Yevhen Konoplyanka,Mittelfeld,29,FC Schalke 04
 Omar Mascarell,Mittelfeld,26,FC Schalke 04
 Rabbi Matondo,Mittelfeld,18,FC Schalke 04
 Weston McKennie,Mittelfeld,20,FC Schalke 04
-Sebastian Rudy,Mittelfeld,29,FC Schalke 04
+Levent Münir Mercan,Mittelfeld,18,FC Schalke 04
+Benito Raman,Mittelfeld,24,FC Schalke 04
 Alessandro Schöpf,Mittelfeld,25,FC Schalke 04
 Suat Serdar,Mittelfeld,22,FC Schalke 04
 Steven Skrzybski,Mittelfeld,26,FC Schalke 04
 Benjamin Stambouli,Mittelfeld,28,FC Schalke 04
 Guido Burgstaller,Sturm,30,FC Schalke 04
 Ahmed Kutucu,Sturm,19,FC Schalke 04
-Benito Raman,Sturm,24,FC Schalke 04
 Fabian Reese,Sturm,21,FC Schalke 04
 Mark Uth,Sturm,27,FC Schalke 04
 Koen Casteels,Tor,27,VfL Wolfsburg
@@ -515,7 +517,6 @@ Otavio Paulo,Abwehr,24,VfL Wolfsburg
 Jerome Roussillon,Abwehr,26,VfL Wolfsburg
 Marcel Tisserand,Abwehr,26,VfL Wolfsburg
 Felix Uduokhai,Abwehr,21,VfL Wolfsburg
-Paulo Otavio,Abwehr,24,VfL Wolfsburg
 William,Abwehr,24,VfL Wolfsburg
 Maximilian Arnold,Mittelfeld,25,VfL Wolfsburg
 Ismail Azzaoui,Mittelfeld,21,VfL Wolfsburg
@@ -523,7 +524,7 @@ Josip Brekalo,Mittelfeld,21,VfL Wolfsburg
 Ignacio Camacho,Mittelfeld,29,VfL Wolfsburg
 Yannick Gerhardt,Mittelfeld,25,VfL Wolfsburg
 Josuha Guilavogui,Mittelfeld,28,VfL Wolfsburg
-Joao Victor,Mittelfeld,25,VfL Wolfsburg
+Victor Joao,Mittelfeld,25,VfL Wolfsburg
 Felix Klaus,Mittelfeld,26,VfL Wolfsburg
 Yunus Malli,Mittelfeld,27,VfL Wolfsburg
 Admir Mehmedi,Mittelfeld,28,VfL Wolfsburg
@@ -533,4 +534,5 @@ Xaver Schlager,Mittelfeld,21,VfL Wolfsburg
 Renato Steffen,Mittelfeld,27,VfL Wolfsburg
 John Yeboah,Mittelfeld,19,VfL Wolfsburg
 Daniel Ginczek,Sturm,28,VfL Wolfsburg
+Lukas Nmecha,Sturm,20,VfL Wolfsburg
 Wout Weghorst,Sturm,26,VfL Wolfsburg
