@@ -145,7 +145,7 @@ class Parser:
 
 def main():
     p = Parser()
-    #p.parse_interactive()
+    p.parse_interactive()
     p.parse(interactive=True)
     #res = p.parse_player("/bauer-robert-79879/spieler/1-bundesliga/2018-19/1-fc-nuernberg-81", 18, "1. FC Nürnberg", False)
     #res = p.parse_player("/timmy-simons-27977/spieler/1-bundesliga/2010-11/1-fc-nuernberg-81", 10, "1. FC Nürnberg", False)

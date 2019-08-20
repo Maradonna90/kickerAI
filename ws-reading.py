@@ -14,7 +14,7 @@ from skopt.space import Real, Integer, Categorical
 from skopt import gp_minimize
 from skopt.utils import use_named_args
 def main():
-    seasons = [9,10,11,12,13,14,15,16,17,18]
+    seasons = [9,10,11,12,13,14,15,16,17,18,19]
     df = pd.DataFrame({})
     for season in seasons:
          d = pd.read_pickle("db/"+str(season).zfill(2)+".pkl")
@@ -33,17 +33,21 @@ def main():
         rob = rob.sort_values(["season"], ascending=False)
         rob['ewma_pts'] = rob['pts']
         ewma_cols = ["apps", "subOn", "manOfTheMatch", "goal", "assistTotal", "shotsPerGame", "aerialWonPerGame", "rating", "minsPlayed", "yellowCard", "redCard", "passSuccess", "ranking", "tacklePerGame", "interceptionPerGame", "foulsPerGame", "offsideWonPerGame", "clearancePerGame", "wasDribbledPerGame", "outfielderBlockPerGame", "goalOwn", "keyPassPerGame", "dribbleWonPerGame", "foulGivenPerGame", "offsideGivenPerGame", "dispossessedPerGame", "turnoverPerGame", "totalPassesPerGame", "accurateCrossesPerGame", "accurateLongPassPerGame", "accurateThroughBallPerGame", "ewma_pts"]
-        rob.loc[:,ewma_cols] = rob.loc[:,ewma_cols].ewm(com=.5).mean()
+        rob.loc[:,ewma_cols] = rob.loc[:,ewma_cols].ewm(com=.8).mean()
         rob.loc[:,ewma_cols] = rob.loc[:,ewma_cols].shift(periods=-1)
         feat_eng_df = feat_eng_df.append(rob)
     print(feat_eng_df.shape)
-    lgbm = lgb.LGBMRegressor(n_estimators=1000, learning_rate=0.01)
+    lgbm = lgb.LGBMRegressor()
     #[0.014746003657271805, 29, 66, 179, 0.42233695027257256, 0.7756175270966108, 'dart']
-    #run_model2("lgbm", lgbm, feat_eng_df, seasons, pos)
-    hyper_tune("lgbm", lgbm, feat_eng_df, seasons)
+    #1412.0915923717405
+    run_model2("lgbm", lgbm, feat_eng_df, seasons, pos, predict=True)
+    #hyper_tune("lgbm", lgbm, feat_eng_df, seasons)
     #TODO: make 19 data available (use init_data function and have a case for pred data
-def run_model2(name, model, data, seasons, posis):
+def run_model2(name, model, data, seasons, posis, predict=False):
     print("train and predict "+name)
+    season_index = len(seasons)
+    if predict:
+        season_index = -1
     mean_error = []
     pred = None
     dat = None
@@ -62,11 +66,13 @@ def run_model2(name, model, data, seasons, posis):
         pred = model.predict(xts)
         dat = xts
         real = yts
+        if predict and seasons[-1] == season:
+            break
         error = mean_squared_error(yts, pred)
         print('Season %d - Error %.5f' % (season, error))
         mean_error.append(error)
     print('Mean Error = %.5f' % np.mean(mean_error))
-    return np.mean(mean_error)
+    #return np.mean(mean_error)
     res = []
     clubs = ws_load_database("clubs")
     names = ws_load_database("names")
@@ -102,7 +108,7 @@ def write(filename, res):
 
 
 
-def init_data(seasons):
+def init_data(seasons, interactive=False):
     data = {}
     r = Reader()
     clubs = []
@@ -113,15 +119,18 @@ def init_data(seasons):
         k_data = {}
         del_cols = ["height", "weight", "age", "isManOfTheMatch", "isActive", "playedPositions", "playedPositionsShort", "teamRegionName", "regionCode", "tournamentShortName", "playerId", "positionText", "teamId", "teamName", "seasonId", "seasonName", "isOpta", "tournamentId", "tournamentRegionId", "tournamentRegionCode", "tournamentRegionName", "tournamentName"]
         data[season] = pd.DataFrame.from_dict(ws_read_json(season)).drop(columns=del_cols)
-        k_data_x[season], k_data_y[season] = r.read("new_data/"+str(season).zfill(2)+".csv")
+        if interactive:
+            k_data_x[season], k_data_y[season] = r.read("new_data/"+str(season).zfill(2)+".csv", interactive=interactive)
+        else:
+            k_data_x[season], k_data_y[season] = r.read("new_data/"+str(season).zfill(2)+".csv")
         k_data_x[season] = pd.DataFrame.from_dict(k_data_x[season])
         k_data_x[season]["pts"] = k_data_y[season]
         k_data[season] = k_data_x[season]
         data[season] = ws_merge_kicker(k_data[season], data[season])
-        #clubs.extend(data[season]['club'].drop_duplicates().values.tolist())
-        #names.extend(data[season]['name'].drop_duplicates().values.tolist())
-    #ws_refresh_database("clubs", clubs)
-    #ws_refresh_database("names", names)
+        clubs.extend(data[season]['club'].drop_duplicates().values.tolist())
+        names.extend(data[season]['name'].drop_duplicates().values.tolist())
+    ws_refresh_database("clubs", clubs)
+    ws_refresh_database("names", names)
     clubs = ws_load_database("clubs")
     names = ws_load_database("names")
 
