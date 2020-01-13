@@ -9,10 +9,11 @@ from datetime import date, datetime
 
 class Parser:
     def __init__(self):
-        self.seasons = [19]
+        self.seasons = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
         self.name_regex = re.compile("[\wöäüß\-]+", re.IGNORECASE)
         self.geb_regex = re.compile("[0-9]{2}\.[0-9]{2}\.[0-9]{4}")
         self.noten_regex = re.compile("[0-9],[0-9]")
+        self.spieltag_regex = re.compile("[0-9]+.Spieltag")
         self.url = 'http://www.kicker.de/news/fussball/bundesliga/vereine/1-bundesliga/20XX-YY/vereine-liste.html'
         self.base = 'http://www.kicker.de'
         self.punkte = {"Note": {
@@ -63,7 +64,7 @@ class Parser:
         soup = BeautifulSoup(r.text)
         table = soup.find("div", {"data-target":"squadContent"}).find_all("a")
         for row in table:
-            if row.get("href") is not "#":
+            if row.get("href") != "#":
                 player_link = row.get("href")
                 #print("Parsing Player: ", player_link)
                 yield from self.parse_player(player_link, season, club, interactive)
@@ -87,7 +88,7 @@ class Parser:
                 yield p_name, p_position, p_age, p_club
             else:
                 p_points = self.calc_points(soup, p_position, p_club)
-                yield p_name, p_position, p_age, p_club, p_points
+                yield p_name, p_position, p_age, p_club, *p_points
         except Exception as e:
             print("ERROR("+url+"):", e)
             pass
@@ -99,33 +100,50 @@ class Parser:
         # Noten einzeln parsen
         # gelb-rot / rot aus summary
         # zu Null bei TW
-        table_summary = soup.find("tr", {"class": "kick__js-open-saison-detail"}).find_all("td")
-        pts_einwechsel = int(table_summary[7].get_text()) * self.punkte["Joker"]
-        if pos == 'Unbekannt':
-            pts_tore = int(table_summary[3].get_text())* self.punkte["Tor"]["Mittelfeld"]
-        else:
-            pts_tore = int(table_summary[3].get_text()) * self.punkte["Tor"][pos]
-        pts_ass = int(table_summary[5].get_text()) * self.punkte["Assist"]
-        pts_start = (int(table_summary[1].get_text().split("/")[0]) - pts_einwechsel) * self.punkte["Start"]
-        pts_rot = int(table_summary[11].get_text()) * self.punkte["Rot"]
-        pts_gelb_rot = int(table_summary[10].get_text()) * self.punkte["Gelb-Rot"]
-        pts_note = 0
-        pts_null = 0
+        points = [0] * 34
         table_detail = soup.find_all("tr", {"class": "kick__vita__statistic--table-second--1 kick__vita__statistic--table-second"})
         for row in table_detail[1:]:
+            pts_einwechsel = 0
+            pts_tore = 0
+            pts_ass = 0
+            pts_start = 0
+            pts_rot = 0
+            pts_gelb_rot = 0
+            pts_note = 0
+            pts_null = 0
             fields = row.find_all("td")
-            if len(fields) is 12:
+            if len(fields) == 12:
+                index_str = fields[0].find("div").get_text()
+                idx = int(self.spieltag_regex.search(index_str)[0].split('.')[0])-1
                 if self.noten_regex.search(fields[1].get_text()):
-                    pts_note += self.punkte["Note"].get(self.noten_regex.search(fields[1].get_text())[0], 0)
+                    pts_note = self.punkte["Note"].get(self.noten_regex.search(fields[1].get_text())[0], 0)
+                if '-' in fields[2].get_text():
+                    pts_tore = 0
+                elif pos == 'Unbekannt':
+                    pts_tore = int(fields[2].get_text()) * self.punkte["Tor"]["Mittelfeld"]
+                else:
+                    pts_tore = int(fields[2].get_text()) * self.punkte["Tor"][pos]
                 if pos == "Tor":
                     if row.find_all("div", {"class": "kick__v100-gameCell__team__name"})[0].get_text() is club:
                         zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[1].get_text())
                     else:
                         zu_null = int(row.find_all("div", {"class": "kick__v100-scoreBoard__scoreHolder__score"})[0].get_text())
                     if zu_null == 0:
-                        pts_null += self.punkte["zuNull"]
-        #print([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
-        return sum([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
+                        pts_null = self.punkte["zuNull"]
+                if '-' in fields[4].get_text():
+                    pts_ass = 0
+                else:
+                    pts_ass = int(fields[4].get_text()) * self.punkte["Assist"]
+                if '-' in fields[6].get_text():
+                    pts_einwechsel = 1
+                elif '-' in fields[7].get_text() or ('-' not in fields[1].get_text() and ('-' in fields[7].get_text())):
+                    pts_start = self.punkte["Start"]
+                if '-' not in fields[10].get_text():
+                    pts_rot = self.punkte["Rot"]
+                elif '-' not in fields[9].get_text():
+                    pts_gelb_rot = self.punkte["Gelb-Rot"]
+                points[idx] = sum([pts_einwechsel, pts_tore, pts_ass, pts_start, pts_rot, pts_gelb_rot, pts_note, pts_null])
+        return points
     def parse_interactive(self):
         print("Start Parsing Interactive")
         f = open("/home/marco/Downloads/kicker19.html")
@@ -145,8 +163,8 @@ class Parser:
 
 def main():
     p = Parser()
-    p.parse_interactive()
-    p.parse(interactive=True)
+    #p.parse_interactive()
+    p.parse()
     #res = p.parse_player("/bauer-robert-79879/spieler/1-bundesliga/2018-19/1-fc-nuernberg-81", 18, "1. FC Nürnberg", False)
     #res = p.parse_player("/timmy-simons-27977/spieler/1-bundesliga/2010-11/1-fc-nuernberg-81", 10, "1. FC Nürnberg", False)
     #[print(r) for r in res]

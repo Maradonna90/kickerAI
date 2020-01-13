@@ -15,9 +15,12 @@ class Reader():
                     x_result.append({"name": row[0], "price": float(row[1]), "club": row[2], "position": row[3]})
                     y_result.append(0)
                     continue
-                x_result.append({"name": row[0], "position": row[1], "age": row[2], "club": row[3]})
+                dic = {"name": row[0], "position": row[1], "age": row[2], "club": row[3]}
+                for i, j in enumerate(row[4:]):
+                    dic["GW"+str(i+1)] = j
+                x_result.append(dic)
                 if interactive:
                     y_result.append(0)
                 else:
-                    y_result.append(float(row[4].replace(",", ".")))
+                    pass
             return x_result, y_result
