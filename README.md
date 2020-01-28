@@ -46,16 +46,16 @@
 
 # KickerAI 2020
 ## Datasources
-	* Understat.com
-		* xG and derived advanced stats on week-by-week basis
-	* Football Manager (GER, ENG, SPA, ITA, FRA)
-		* CA: Aiding prediction for missing player kicker points (maybe even as a feature for weekly predictions?)
-		* PA: Aiding as a talent value, could help to identify the young playres that might have a break through season in comparison to squad fillers
-		* Injury Proneness: how inconsistent playing time might be
-	* historical kicker points
-		* as a time series prediction
-	* Custom Features
-		* squad ranking (CA rank within team)
+* Understat.com
+	* xG and derived advanced stats on week-by-week basis
+* Football Manager (GER, ENG, SPA, ITA, FRA)
+	* CA: Aiding prediction for missing player kicker points (maybe even as a feature for weekly predictions?)
+	* PA: Aiding as a talent value, could help to identify the young playres that might have a break through season in comparison to squad fillers
+	* Injury Proneness: how inconsistent playing time might be
+* historical kicker points
+	* as a time series prediction
+* Custom Features
+	* squad ranking (CA rank within team)
 
 ## Data Merging Pipeline
 1. Interactive Price Data as basis
