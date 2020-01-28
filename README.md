@@ -68,3 +68,11 @@
 6. Concatenate nh_players and h_players
 7. Calculate custom features
 8. Train kicker points predictor
+	8.1 Try week-by-week points (LSTM, LGBM, Bayesian Prediction)
+	8.2 Try year-by-year points (as above)
+9. Question for data from 6.
+	9.1 What features correlate with seasonal points the most?
+	9.2 What is the distribution of points-per-million (ppm)?
+	9.3 What is the distribution of points? => can we find classes of players?
+	9.4 What does have players of certain classes in common (best ppm? best pts? worst ppm? worst pts? best/worst difference to previous season? historical consistency/inconsistency?)
+
