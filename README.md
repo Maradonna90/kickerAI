@@ -18,7 +18,7 @@
 	* 
 
 # Teams
-* Lasso
+* Lasso: 442 (28.01.20)
 	* Timo Horn
 	* Jerome Roussillon
 	* Wout Weghorst
@@ -31,7 +31,7 @@
 	* hummels
 	* Witsel 
 
-* Handpicked
+* Handpicked: 448 (28.01.20)
 	* Timo Horn
 	* Subotic
 	* Ndicka
@@ -43,3 +43,28 @@
 	* Plea
 	* Paco
 	* Poulsen
+
+# KickerAI 2020
+## Datasources
+	* Understat.com
+		* xG and derived advanced stats on week-by-week basis
+	* Football Manager (GER, ENG, SPA, ITA, FRA)
+		* CA: Aiding prediction for missing player kicker points (maybe even as a feature for weekly predictions?)
+		* PA: Aiding as a talent value, could help to identify the young playres that might have a break through season in comparison to squad fillers
+		* Injury Proneness: how inconsistent playing time might be
+	* historical kicker points
+		* as a time series prediction
+	* Custom Features
+		* squad ranking (CA rank within team)
+
+## Data Merging Pipeline
+1. Interactive Price Data as basis
+2. Fuzzy merge with historic kicker data of k-seasons (k=3)
+	2.1 Dataset is split into two parts: 1) players who have historic kicker points for the last three season (h_players) and players who don't (nh_player)
+3. Merge nh_players with k seasons of historic understat data (k=3) => Filter players from obscure leagues and not enough historic data
+4. Merge nh_players with historc FM data
+	4.1 If players are not found manually export them from missing seasons
+5. Train a predictor to predict the missing kicker points for nh_players to fill gaps.
+6. Concatenate nh_players and h_players
+7. Calculate custom features
+8. Train kicker points predictor
